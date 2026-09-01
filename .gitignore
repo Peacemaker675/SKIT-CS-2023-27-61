@@ -1,0 +1,120 @@
+# Model weights & Checkpoints
+*.pt
+*.pth
+*.onnx
+*.engine
+*.bin
+*.pkl
+*.zip
+*.h5
+*.ckpt
+*.safetensors
+vision/models/*
+!vision/models/.gitkeep
+rl_agent/models/*
+!rl_agent/models/.gitkeep
+
+# Datasets, Annotations & Frame Cache
+*.csv
+*.jsonl
+*.parquet
+*.h5
+*.npy
+*.npz
+vision/data/*
+!vision/data/.gitkeep
+data/
+
+# Video Streams & Test Clips
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.h264
+*.ts
+*.m3u8
+
+# SUMO Simulation Logs & Traces
+*.xml.gz
+*.out.xml
+*.dump.xml
+*.tripinfo.xml
+*.xml
+!*.net.xml
+!*.rou.xml
+!*.sumocfg
+
+# TensorBoard, WandB & Training Logs
+runs/
+wandb/
+.tensorboard/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Node.js & Frontend
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/dist/
+
+# Logs & Locks
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# Environment & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# Database data dumps
+*.sql
+*.sqlite3
+
+# Operating System & IDE Configs
+# macOS
+.DS_Store
+.AppleDouble
+.LSSharedFileList
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors & IDEs
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~

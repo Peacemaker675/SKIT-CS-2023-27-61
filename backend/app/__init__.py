@@ -1,4 +1,5 @@
 from flask import Flask, app
+from app.extensions import socketio
 
 
 def create_app():

@@ -2,6 +2,7 @@ from . import auth
 from flask import jsonify, request, make_response
 from flask_jwt_extended import (
     jwt_required,
+    get_jwt,
     get_jwt_identity,
     set_access_cookies,
     set_refresh_cookies,
@@ -24,9 +25,12 @@ def login():
     if not user or not check_password_hash(user.password_hash, password):
         return jsonify({"msg": "INVALID_CREDENTIALS"}), 401
 
-    access_token = create_access_token(identity={"user_id": user.id, "role": user.role})
+    claims = {"role": user.role}
+    access_token = create_access_token(
+        identity=str(user.id), additional_claims=claims
+    )
     refresh_token = create_refresh_token(
-        identity={"user_id": user.id, "role": user.role}
+        identity=str(user.id), additional_claims=claims
     )
 
     response = make_response(
@@ -57,7 +61,10 @@ def check_auth():
 @jwt_required(refresh=True, locations=["cookies"])
 def refresh_token():
     current_user_identity = get_jwt_identity()
-    access_token = create_access_token(identity=current_user_identity)
+    access_token = create_access_token(
+        identity=current_user_identity,
+        additional_claims={"role": get_jwt().get("role")},
+    )
     response = jsonify({"msg": "TOKEN_REFRESHED"})
     set_access_cookies(response, access_token)
     return response

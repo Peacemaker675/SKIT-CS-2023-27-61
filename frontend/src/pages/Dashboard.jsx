@@ -1,5 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.jsx";
+import { ROLES, useAuth } from "../auth/AuthContext.jsx";
+import LiveMonitoring from "../components/LiveMonitoring.jsx";
+
+// SRS: Live Monitoring is visible to Operators and Admins.
+const LIVE_MONITORING_ROLES = [ROLES.OPERATOR, ROLES.ADMIN];
 
 // Placeholder role dashboard - real widgets come later.
 export default function Dashboard({ title }) {
@@ -25,7 +29,11 @@ export default function Dashboard({ title }) {
       </header>
       <main>
         <h1>{title}</h1>
-        <p className="muted">This dashboard is a placeholder.</p>
+        {LIVE_MONITORING_ROLES.includes(user.role) ? (
+          <LiveMonitoring />
+        ) : (
+          <p className="muted">This dashboard is a placeholder.</p>
+        )}
       </main>
     </div>
   );

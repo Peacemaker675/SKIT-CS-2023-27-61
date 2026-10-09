@@ -1,0 +1,30 @@
+[
+  {
+    "id": "INT_001",
+    "name": "Placeholder Intersection 1",
+    "lat": 26.8235,
+    "lng": 75.8645,
+    "neighbors": ["INT_002", "INT_004"]
+  },
+  {
+    "id": "INT_002",
+    "name": "Placeholder Intersection 2",
+    "lat": 26.827,
+    "lng": 75.872,
+    "neighbors": ["INT_001", "INT_003"]
+  },
+  {
+    "id": "INT_003",
+    "name": "Placeholder Intersection 3",
+    "lat": 26.8205,
+    "lng": 75.879,
+    "neighbors": ["INT_002", "INT_004"]
+  },
+  {
+    "id": "INT_004",
+    "name": "Placeholder Intersection 4",
+    "lat": 26.816,
+    "lng": 75.869,
+    "neighbors": ["INT_001", "INT_003"]
+  }
+]

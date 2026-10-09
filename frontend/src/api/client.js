@@ -2,6 +2,8 @@
 // The backend keeps the JWTs in HttpOnly cookies, so every request must send
 // credentials; JS never sees the token itself.
 
+import mockIntersections from "../mocks/intersections.json";
+
 export const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 
 export class ApiError extends Error {
@@ -66,4 +68,21 @@ export const authApi = {
     }),
   check: () => apiRequest("/auth/check"),
   logout: () => rawRequest("/auth/logout", { method: "POST" }),
+};
+
+// Each intersection: { id, name, lat, lng, neighbors: [id, ...] } (SRS: unique
+// ID, GPS coordinates and adjacent neighbours).
+export const intersectionsApi = {
+  // The SRS lists GET /api/admin/intersections but the backend doesn't serve
+  // it yet; use placeholder intersections only while the route is missing.
+  list: async () => {
+    try {
+      return await apiRequest("/admin/intersections");
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        return mockIntersections;
+      }
+      throw err;
+    }
+  },
 };

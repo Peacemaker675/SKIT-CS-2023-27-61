@@ -45,6 +45,10 @@ export default function LiveMonitoring() {
       <IntersectionDetailPanel
         intersection={selected}
         data={selected ? liveData[selected.id] : null}
+        summary={{
+          total: intersections.length,
+          live: ids.filter((id) => liveData[id]).length,
+        }}
       />
     </section>
   );

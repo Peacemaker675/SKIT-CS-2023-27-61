@@ -1,4 +1,10 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { authApi, setUnauthorizedHandler } from "../api/client.js";
 
 // The JWT itself lives in HttpOnly cookies set by the backend. localStorage
@@ -6,16 +12,11 @@ import { authApi, setUnauthorizedHandler } from "../api/client.js";
 // route without a round trip; the backend remains the source of truth.
 const STORAGE_KEY = "intelliroute.auth";
 
+// Each role's landing page lives in config/tabs.js (defaultTabFor).
 export const ROLES = {
   ADMIN: "admin",
   OPERATOR: "operator",
   ANALYST: "analyst",
-};
-
-export const ROLE_HOME = {
-  [ROLES.ADMIN]: "/admin",
-  [ROLES.OPERATOR]: "/operator",
-  [ROLES.ANALYST]: "/analyst",
 };
 
 // Backend stores roles lowercased; normalise anything we receive.

@@ -1,17 +1,29 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
-import { ROLES, ROLE_HOME, useAuth } from "./auth/AuthContext.jsx";
+import { useAuth } from "./auth/AuthContext.jsx";
+import { TABS, defaultTabFor } from "./config/tabs.js";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Unauthorized from "./pages/Unauthorized.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import LiveMonitoring from "./components/LiveMonitoring.jsx";
+import ComingSoon from "./components/layout/ComingSoon.jsx";
+import Spinner from "./components/Spinner.jsx";
 
-// Sends "/" to the login page or the current user's role dashboard.
+// Content for each dashboard tab; tabs without real pages yet show a
+// placeholder.
+const TAB_CONTENT = {
+  live: <LiveMonitoring />,
+};
+
+// Sends "/" (and "/dashboard") to the login page or the user's default tab.
 function HomeRedirect() {
   const { user, checking } = useAuth();
-  if (checking) return <div className="center muted">Checking session…</div>;
+  if (checking) return <Spinner label="Checking session…" />;
   if (!user) return <Navigate to="/login" replace />;
-  return <Navigate to={ROLE_HOME[user.role] || "/unauthorized"} replace />;
+  return (
+    <Navigate to={defaultTabFor(user.role)?.path || "/unauthorized"} replace />
+  );
 }
 
 export default function App() {
@@ -21,21 +33,26 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-      <Route element={<ProtectedRoute roles={[ROLES.ADMIN]} />}>
-        <Route path="/admin" element={<Dashboard title="Admin Dashboard" />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<HomeRedirect />} />
+          {TABS.map((tab) => (
+            <Route key={tab.key} element={<ProtectedRoute roles={tab.roles} />}>
+              <Route
+                path={tab.key}
+                element={
+                  TAB_CONTENT[tab.key] || <ComingSoon label={tab.label} />
+                }
+              />
+            </Route>
+          ))}
+        </Route>
       </Route>
-      <Route element={<ProtectedRoute roles={[ROLES.OPERATOR]} />}>
-        <Route
-          path="/operator"
-          element={<Dashboard title="Operator Dashboard" />}
-        />
-      </Route>
-      <Route element={<ProtectedRoute roles={[ROLES.ANALYST]} />}>
-        <Route
-          path="/analyst"
-          element={<Dashboard title="Analyst Dashboard" />}
-        />
-      </Route>
+
+      {/* Old per-role dashboards (before the tab shell). */}
+      <Route path="/admin" element={<Navigate to="/" replace />} />
+      <Route path="/operator" element={<Navigate to="/" replace />} />
+      <Route path="/analyst" element={<Navigate to="/" replace />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

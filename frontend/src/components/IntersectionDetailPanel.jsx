@@ -1,4 +1,5 @@
 import { CONGESTION, congestionLevel } from "../lib/congestion.js";
+import { MapPinIcon } from "./icons.jsx";
 
 // Fields the backend currently stores per update
 // (backend/app/influx_models/TrafficPoint.py).
@@ -19,11 +20,33 @@ function formatValue(value) {
 }
 
 // SRS Tab 1, Component 2 (minimal): live values for the selected intersection.
-export default function IntersectionDetailPanel({ intersection, data }) {
+export default function IntersectionDetailPanel({
+  intersection,
+  data,
+  summary,
+}) {
   if (!intersection) {
     return (
-      <aside className="panel">
-        <p className="muted">Select an intersection on the map.</p>
+      <aside className="panel panel-empty">
+        <span className="empty-icon">
+          <MapPinIcon size={26} />
+        </span>
+        <h2>No intersection selected</h2>
+        <p className="muted">
+          Click a marker on the map to see live traffic for that junction.
+        </p>
+        {summary && (
+          <div className="stat-row">
+            <div className="stat">
+              <strong>{summary.total}</strong>
+              <span>Intersections</span>
+            </div>
+            <div className="stat">
+              <strong>{summary.live}</strong>
+              <span>Live now</span>
+            </div>
+          </div>
+        )}
       </aside>
     );
   }

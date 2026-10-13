@@ -1,14 +1,15 @@
-import { useNavigate } from "react-router-dom";
-import { ROLES, useAuth } from "../auth/AuthContext.jsx";
-import LiveMonitoring from "../components/LiveMonitoring.jsx";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext.jsx";
+import { TABS } from "../config/tabs.js";
+import DashboardNav from "../components/layout/DashboardNav.jsx";
 
-// SRS: Live Monitoring is visible to Operators and Admins.
-const LIVE_MONITORING_ROLES = [ROLES.OPERATOR, ROLES.ADMIN];
-
-// Placeholder role dashboard - real widgets come later.
-export default function Dashboard({ title }) {
+// Dashboard shell: top bar + role-filtered tab nav; the active tab renders
+// in the <Outlet />.
+export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const activeTab = TABS.find((tab) => pathname.startsWith(tab.path));
 
   async function handleLogout() {
     await logout();
@@ -27,13 +28,10 @@ export default function Dashboard({ title }) {
           Log out
         </button>
       </header>
+      <DashboardNav />
       <main>
-        <h1>{title}</h1>
-        {LIVE_MONITORING_ROLES.includes(user.role) ? (
-          <LiveMonitoring />
-        ) : (
-          <p className="muted">This dashboard is a placeholder.</p>
-        )}
+        {activeTab && <h1>{activeTab.label}</h1>}
+        <Outlet />
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { ROLE_HOME, useAuth } from "../auth/AuthContext.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
+import { defaultTabFor, tabsFor } from "../config/tabs.js";
 import { ApiError } from "../api/client.js";
 
 export default function Login() {
@@ -14,7 +15,12 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false);
 
   if (user) {
-    return <Navigate to={ROLE_HOME[user.role] || "/unauthorized"} replace />;
+    return (
+      <Navigate
+        to={defaultTabFor(user.role)?.path || "/unauthorized"}
+        replace
+      />
+    );
   }
 
   async function handleSubmit(e) {
@@ -29,10 +35,12 @@ export default function Login() {
     setSubmitting(true);
     try {
       const loggedIn = await login(officialId, password);
-      const home = ROLE_HOME[loggedIn.role] || "/unauthorized";
+      const home = defaultTabFor(loggedIn.role)?.path || "/unauthorized";
       // Return to the page that bounced us here, if the role can see it.
       const from = location.state?.from?.pathname;
-      navigate(from && from.startsWith(home) ? from : home, { replace: true });
+      const canSee =
+        from && tabsFor(loggedIn.role).some((tab) => from.startsWith(tab.path));
+      navigate(canSee ? from : home, { replace: true });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setError("Invalid official ID or password.");

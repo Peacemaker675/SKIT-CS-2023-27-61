@@ -13,7 +13,7 @@ import AnalyticsTab from "./pages/tabs/AnalyticsTab.jsx";
 import ForecastTab from "./pages/tabs/ForecastTab.jsx";
 import SystemTab from "./pages/tabs/SystemTab.jsx";
 
-// Content for each dashboard tab; a tab without a page shows a placeholder.
+// Tabs missing here show the ComingSoon placeholder.
 const TAB_CONTENT = {
   live: <LiveMonitoring />,
   analytics: <AnalyticsTab />,
@@ -54,7 +54,7 @@ export default function App() {
         </Route>
       </Route>
 
-      {/* Old per-role dashboards (before the tab shell). */}
+      {/* Old per-role dashboard URLs. */}
       <Route path="/admin" element={<Navigate to="/" replace />} />
       <Route path="/operator" element={<Navigate to="/" replace />} />
       <Route path="/analyst" element={<Navigate to="/" replace />} />

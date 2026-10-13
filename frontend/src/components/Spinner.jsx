@@ -1,4 +1,4 @@
-// Full-page loading state, e.g. while the session cookie is being checked.
+// Full-page loader, e.g. while the session is being checked.
 export default function Spinner({ label = "Loading…" }) {
   return (
     <div className="center" role="status">

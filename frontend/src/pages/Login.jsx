@@ -40,7 +40,7 @@ export default function Login() {
     try {
       const loggedIn = await login(officialId, password);
       const home = defaultTabFor(loggedIn.role)?.path || "/unauthorized";
-      // Return to the page that bounced us here, if the role can see it.
+      // Go back to the page that sent us here, if this role can open it.
       const from = location.state?.from?.pathname;
       const canSee =
         from && tabsFor(loggedIn.role).some((tab) => from.startsWith(tab.path));

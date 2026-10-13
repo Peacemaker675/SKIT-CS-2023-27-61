@@ -1,5 +1,5 @@
-// Small inline line icons (24x24 grid, stroke = currentColor) so the UI needs
-// no icon library.
+// Inline SVG icons (24x24, drawn with currentColor) so we don't need an icon
+// library.
 function Icon({ size = 18, children }) {
   return (
     <svg

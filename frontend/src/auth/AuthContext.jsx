@@ -12,7 +12,7 @@ import { authApi, setUnauthorizedHandler } from "../api/client.js";
 // route without a round trip; the backend remains the source of truth.
 const STORAGE_KEY = "intelliroute.auth";
 
-// Each role's landing page lives in config/tabs.js (defaultTabFor).
+// Landing tab per role is in config/tabs.js (defaultTabFor).
 export const ROLES = {
   ADMIN: "admin",
   OPERATOR: "operator",

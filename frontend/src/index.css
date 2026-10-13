@@ -1,6 +1,6 @@
 /* ---- Theme tokens ----
-   Light is the default. Dark applies when the OS prefers dark (unless the
-   user picked light) or when the user picked dark (<html data-theme>). */
+   Light by default. Dark if the user picked it (<html data-theme>) or the OS
+   prefers dark and the user hasn't picked light. */
 :root {
   --bg: #f7f7fb;
   --surface: #ffffff;
@@ -630,7 +630,7 @@ button.primary-gradient:hover:not(:disabled) {
   font-size: 0.8rem;
 }
 
-/* ---- Live Monitoring (map + detail panel fill the viewport) ---- */
+/* ---- Live Monitoring ---- */
 .live-monitoring {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
@@ -686,8 +686,8 @@ button.primary-gradient:hover:not(:disabled) {
   margin-right: 6px;
 }
 
-/* Dark mode: darken the OpenStreetMap tiles (tile pane only, so congestion
-   markers keep their real colours). */
+/* Darken the map tiles in dark mode. Only the tile pane, so the congestion
+   markers keep their colours. */
 :root[data-theme="dark"] .leaflet-tile-pane {
   filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9)
     saturate(0.6);

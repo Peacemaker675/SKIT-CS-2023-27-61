@@ -1,7 +1,6 @@
 import { ROLES } from "../auth/AuthContext.jsx";
 
-// Dashboard tabs and which roles may see each one (per the SRS).
-// Paths point at /dashboard/<key>; the routes themselves are wired up separately.
+// Dashboard tabs and the roles that can see each one (from the SRS).
 export const TABS = [
   {
     key: "live",
@@ -36,12 +35,12 @@ const DEFAULT_TAB_KEY = {
   [ROLES.ANALYST]: "analytics",
 };
 
-// Tabs visible to the given role (empty array for unknown roles).
+// Tabs the role can see (empty for unknown roles).
 export function tabsFor(role) {
   return TABS.filter((tab) => tab.roles.includes(role));
 }
 
-// Default tab object for the given role, or null for unknown/empty roles.
+// Landing tab for the role, or null if the role is unknown.
 export function defaultTabFor(role) {
   const key = DEFAULT_TAB_KEY[role];
   return TABS.find((tab) => tab.key === key) ?? null;

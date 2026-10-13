@@ -10,7 +10,7 @@ const TAB_ICONS = {
   system: SettingsIcon,
 };
 
-// Tab bar under the top bar; only shows tabs the user's role may open.
+// Only shows the tabs the user's role can open.
 export default function DashboardNav() {
   const { user } = useAuth();
 

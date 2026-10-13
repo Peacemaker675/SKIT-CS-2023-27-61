@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intersection_state.schema.json",
+  "title": "Intersection state",
+  "description": "Latest state of one intersection. Stored in Redis as intersection:<intersection_id> and sent as the body of POST /api/intersections/<intersection_id>/data (SRS, Redis schema). Per-lane values are keyed by lane id. Proposed format - the backend currently takes a flat payload.",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "vehicle_counts",
+    "queue_lengths",
+    "avg_wait_times",
+    "current_phase"
+  ],
+  "properties": {
+    "timestamp": {
+      "description": "When the perception module produced this state (ISO 8601, UTC).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "vehicle_counts": {
+      "description": "Vehicles detected per lane.",
+      "$ref": "#/$defs/perLaneInteger"
+    },
+    "queue_lengths": {
+      "description": "Queue length per lane (unit not given in the SRS).",
+      "$ref": "#/$defs/perLaneNumber"
+    },
+    "avg_wait_times": {
+      "description": "Average wait time per lane (unit not given in the SRS).",
+      "$ref": "#/$defs/perLaneNumber"
+    },
+    "current_phase": {
+      "description": "Active signal phase, e.g. lane_1_green.",
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "laneId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "perLaneInteger": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/laneId" },
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "perLaneNumber": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/laneId" },
+      "additionalProperties": { "type": "number", "minimum": 0 }
+    }
+  },
+  "examples": [
+    {
+      "timestamp": "2025-10-12T10:05:28Z",
+      "vehicle_counts": { "lane_1": 12, "lane_2": 8, "lane_3": 15 },
+      "queue_lengths": { "lane_1": 60, "lane_2": 40, "lane_3": 75 },
+      "avg_wait_times": { "lane_1": 45, "lane_2": 30, "lane_3": 55 },
+      "current_phase": "lane_1_green"
+    }
+  ]
+}

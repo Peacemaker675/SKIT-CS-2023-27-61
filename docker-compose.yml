@@ -21,7 +21,7 @@ services:
     environment:
       FLASK_APP: app
       # Container hostnames override the localhost values in .env
-      POSTGRES_HOST: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      POSTGRES_HOST: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_HOST: redis
       REDIS_PORT: "6379"
       INFLUX_HOST: http://influxdb:8181
@@ -80,7 +80,7 @@ services:
     ports:
       - "8181:8181"
     volumes:
-      - influx_data:/var/lib/influxdb3/data
+      - influx_data:/var/lib/influxdb3
     restart: unless-stopped
 
 volumes:

@@ -1,7 +1,6 @@
 import { useTheme } from "../../theme/theme.js";
 import { MoonIcon, SunIcon } from "../icons.jsx";
 
-// Sun/moon button that switches between light and dark mode.
 export default function ThemeToggle() {
   const { theme, toggle } = useTheme();
   const next = theme === "dark" ? "light" : "dark";

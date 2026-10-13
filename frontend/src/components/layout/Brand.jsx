@@ -1,5 +1,4 @@
-// Logo mark + "IntelliRoute" wordmark. The wordmark is text (not the PNG
-// wordmark) so it stays sharp and follows the light/dark theme.
+// Logo + name. The name is text rather than an image so it follows the theme.
 export default function Brand({ size = 30, className = "" }) {
   return (
     <span className={`brand ${className}`}>

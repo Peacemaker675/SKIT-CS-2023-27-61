@@ -1,8 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// In local dev the Vite server proxies API + websocket calls to Flask so the
-// JWT cookies stay first-party (same origin as the page).
+// Dev server proxies API and websocket calls to Flask so the JWT cookies stay
+// same-origin.
 const backend = process.env.VITE_PROXY_TARGET || "http://localhost:5000";
 
 export default defineConfig({
@@ -10,8 +10,8 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000,
-    // The backend's CORS / Socket.IO origin is http://localhost:3000, so fail
-    // instead of silently moving to another port when 3000 is taken.
+    // Backend CORS / Socket.IO only allow http://localhost:3000, so fail
+    // instead of quietly switching ports if 3000 is busy.
     strictPort: true,
     proxy: {
       "/api": { target: backend, changeOrigin: true },

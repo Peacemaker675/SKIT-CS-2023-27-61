@@ -1,12 +1,11 @@
 import { useSyncExternalStore } from "react";
 
-// Light/dark theme. With no saved choice the app follows the OS setting;
-// clicking the toggle saves "light" or "dark" and sets <html data-theme>,
-// which index.css uses to pick the colour tokens.
+// Light/dark theme. Follows the OS setting until the user picks one; the
+// choice is saved and set as <html data-theme> for index.css.
 const STORAGE_KEY = "intelliroute.theme";
 const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
 const listeners = new Set();
-// Last choice made on this page, used when localStorage is unavailable.
+// Last choice on this page, in case localStorage is blocked.
 let pageChoice = null;
 
 function readSaved() {
@@ -45,7 +44,7 @@ export function setTheme(theme) {
   notify();
 }
 
-// Returns the active theme ("light" | "dark") and a toggle function.
+// Current theme ("light" or "dark") and a toggle.
 export function useTheme() {
   const theme = useSyncExternalStore(subscribe, currentTheme);
   const toggle = () => setTheme(theme === "dark" ? "light" : "dark");

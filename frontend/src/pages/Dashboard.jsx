@@ -6,8 +6,7 @@ import DashboardNav from "../components/layout/DashboardNav.jsx";
 import ThemeToggle from "../components/layout/ThemeToggle.jsx";
 import { LogoutIcon } from "../components/icons.jsx";
 
-// Dashboard shell: top bar + role-filtered tab nav; the active tab renders
-// in the <Outlet />.
+// Top bar and tab nav; the selected tab renders in the <Outlet />.
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();

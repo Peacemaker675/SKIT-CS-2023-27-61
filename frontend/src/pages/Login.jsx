@@ -3,6 +3,9 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { defaultTabFor, tabsFor } from "../config/tabs.js";
 import { ApiError } from "../api/client.js";
+import Brand from "../components/layout/Brand.jsx";
+import ThemeToggle from "../components/layout/ThemeToggle.jsx";
+import { EyeIcon, EyeOffIcon } from "../components/icons.jsx";
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -13,6 +16,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   if (user) {
     return (
@@ -28,7 +32,7 @@ export default function Login() {
     setError("");
 
     if (!officialId.trim() || !password.trim()) {
-      setError("Official ID and password are required.");
+      setError("Username and password are required.");
       return;
     }
 
@@ -43,7 +47,7 @@ export default function Login() {
       navigate(canSee ? from : home, { replace: true });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        setError("Invalid official ID or password.");
+        setError("Invalid username or password.");
       } else if (err instanceof ApiError) {
         setError(`Login failed (${err.status}). Please try again.`);
       } else {
@@ -55,12 +59,20 @@ export default function Login() {
   }
 
   return (
-    <div className="center">
-      <form className="card" onSubmit={handleSubmit} noValidate>
-        <h1>Intelliroute</h1>
-        <p className="muted">Sign in to continue</p>
+    <div className="center auth-bg">
+      <div className="auth-corner">
+        <ThemeToggle />
+      </div>
+      <form className="card auth-card" onSubmit={handleSubmit} noValidate>
+        <div className="auth-header">
+          <Brand size={48} className="brand-lg" />
+          <p className="muted">AI-powered traffic signal control</p>
+        </div>
 
-        <label htmlFor="official_id">Official ID</label>
+        <h1 className="auth-title">Sign in to continue</h1>
+
+        {/* Labelled "Username", but the backend logs in by official ID. */}
+        <label htmlFor="official_id">Username</label>
         <input
           id="official_id"
           name="official_id"
@@ -72,15 +84,26 @@ export default function Login() {
         />
 
         <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={submitting}
-        />
+        <div className="password-field">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={submitting}
+          />
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            title={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+          </button>
+        </div>
 
         {error && (
           <p className="error" role="alert">
@@ -88,7 +111,11 @@ export default function Login() {
           </p>
         )}
 
-        <button type="submit" disabled={submitting}>
+        <button
+          type="submit"
+          className="primary-gradient"
+          disabled={submitting}
+        >
           {submitting ? "Signing in…" : "Sign in"}
         </button>
       </form>

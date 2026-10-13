@@ -1,7 +1,10 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { TABS } from "../config/tabs.js";
+import Brand from "../components/layout/Brand.jsx";
 import DashboardNav from "../components/layout/DashboardNav.jsx";
+import ThemeToggle from "../components/layout/ThemeToggle.jsx";
+import { LogoutIcon } from "../components/icons.jsx";
 
 // Dashboard shell: top bar + role-filtered tab nav; the active tab renders
 // in the <Outlet />.
@@ -19,18 +22,35 @@ export default function Dashboard() {
   return (
     <div className="page">
       <header className="topbar">
-        <strong>Intelliroute</strong>
+        <Brand />
         <span className="spacer" />
-        <span className="muted">
-          {user.username} ({user.official_id}) · {user.role}
-        </span>
-        <button className="secondary" onClick={handleLogout}>
-          Log out
+        <ThemeToggle />
+        <div
+          className="user-chip"
+          title={`${user.username} (${user.official_id})`}
+        >
+          <span className="avatar" aria-hidden="true">
+            {(user.username || "?").charAt(0).toUpperCase()}
+          </span>
+          <span className="user-meta">
+            <span className="user-name">{user.username}</span>
+            <span className="user-id">{user.official_id}</span>
+          </span>
+          <span className={`role-badge role-${user.role}`}>{user.role}</span>
+        </div>
+        <button
+          type="button"
+          className="secondary logout-button"
+          onClick={handleLogout}
+          aria-label="Log out"
+        >
+          <LogoutIcon size={16} />
+          <span className="hide-sm">Log out</span>
         </button>
       </header>
       <DashboardNav />
       <main>
-        {activeTab && <h1>{activeTab.label}</h1>}
+        {activeTab && <h1 className="page-title">{activeTab.label}</h1>}
         <Outlet />
       </main>
     </div>

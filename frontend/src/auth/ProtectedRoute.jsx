@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext.jsx";
+import Spinner from "../components/Spinner.jsx";
 
 // Guards child routes: requires a logged-in user and, optionally, one of
 // `roles`. Note this is UX only - the backend enforces access on every call.
@@ -8,7 +9,7 @@ export default function ProtectedRoute({ roles }) {
   const location = useLocation();
 
   if (checking) {
-    return <div className="center muted">Checking session…</div>;
+    return <Spinner label="Checking session…" />;
   }
 
   if (!user) {

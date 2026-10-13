@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Unauthorized from "./pages/Unauthorized.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import LiveMonitoring from "./components/LiveMonitoring.jsx";
+import ComingSoon from "./components/layout/ComingSoon.jsx";
+import Spinner from "./components/Spinner.jsx";
 
 // Content for each dashboard tab; tabs without real pages yet show a
 // placeholder.
@@ -17,7 +19,7 @@ const TAB_CONTENT = {
 // Sends "/" (and "/dashboard") to the login page or the user's default tab.
 function HomeRedirect() {
   const { user, checking } = useAuth();
-  if (checking) return <div className="center muted">Checking session…</div>;
+  if (checking) return <Spinner label="Checking session…" />;
   if (!user) return <Navigate to="/login" replace />;
   return (
     <Navigate to={defaultTabFor(user.role)?.path || "/unauthorized"} replace />
@@ -39,9 +41,7 @@ export default function App() {
               <Route
                 path={tab.key}
                 element={
-                  TAB_CONTENT[tab.key] || (
-                    <p className="muted">This tab is coming soon.</p>
-                  )
+                  TAB_CONTENT[tab.key] || <ComingSoon label={tab.label} />
                 }
               />
             </Route>

@@ -31,7 +31,7 @@ export default function IntersectionMap({
   onSelect,
 }) {
   return (
-    <div>
+    <div className="map-wrap">
       <MapContainer className="map" center={[26.9124, 75.7873]} zoom={13}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

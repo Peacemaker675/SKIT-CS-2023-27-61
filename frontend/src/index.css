@@ -504,6 +504,68 @@ button.primary-gradient:hover:not(:disabled) {
   color: var(--primary-hover);
 }
 
+/* ---- Tab placeholder panels (one per SRS component) ---- */
+.tab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.section-panel {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 160px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.section-panel.wide {
+  grid-column: 1 / -1;
+}
+
+.section-panel header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-panel h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.section-panel p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.section-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--glow);
+  color: var(--primary-hover);
+}
+
+.soon-chip {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* ---- Empty states ---- */
 .empty-card,
 .panel-empty {

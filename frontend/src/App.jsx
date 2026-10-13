@@ -9,11 +9,16 @@ import NotFound from "./pages/NotFound.jsx";
 import LiveMonitoring from "./components/LiveMonitoring.jsx";
 import ComingSoon from "./components/layout/ComingSoon.jsx";
 import Spinner from "./components/Spinner.jsx";
+import AnalyticsTab from "./pages/tabs/AnalyticsTab.jsx";
+import ForecastTab from "./pages/tabs/ForecastTab.jsx";
+import SystemTab from "./pages/tabs/SystemTab.jsx";
 
-// Content for each dashboard tab; tabs without real pages yet show a
-// placeholder.
+// Content for each dashboard tab; a tab without a page shows a placeholder.
 const TAB_CONTENT = {
   live: <LiveMonitoring />,
+  analytics: <AnalyticsTab />,
+  forecast: <ForecastTab />,
+  system: <SystemTab />,
 };
 
 // Sends "/" (and "/dashboard") to the login page or the user's default tab.

@@ -4,8 +4,6 @@
 *.onnx
 *.engine
 *.bin
-*.pkl
-*.zip
 *.h5
 *.ckpt
 *.safetensors

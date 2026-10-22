@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emergency.schema.json",
+  "title": "Emergency (green corridor)",
+  "description": "One emergency vehicle run. The operator starts it, the route is computed from intersection neighbours and every intersection on the route is given green in turn. Proposed format - none of this is in the SRS yet. Proposed endpoints: POST /api/emergencies (body: #/$defs/startRequest), GET /api/emergencies/active, POST /api/emergencies/<id>/clear. Proposed Socket.IO events: emergency_update (#/$defs/emergencyUpdate) and emergency_cleared (#/$defs/emergencyCleared).",
+  "type": "object",
+  "required": [
+    "id",
+    "vehicle_type",
+    "start_id",
+    "end_id",
+    "route",
+    "current_id",
+    "status",
+    "started_at",
+    "cleared_at"
+  ],
+  "properties": {
+    "id": {
+      "description": "Unique emergency id, assigned by the backend.",
+      "type": "string",
+      "minLength": 1
+    },
+    "vehicle_type": { "$ref": "#/$defs/vehicleType" },
+    "start_id": {
+      "description": "Intersection where the vehicle enters the corridor.",
+      "$ref": "#/$defs/intersectionId"
+    },
+    "end_id": {
+      "description": "Intersection where the vehicle leaves the corridor.",
+      "$ref": "#/$defs/intersectionId"
+    },
+    "route": {
+      "description": "Intersection ids in travel order, from start_id to end_id inclusive.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/intersectionId" }
+    },
+    "current_id": {
+      "description": "Intersection the vehicle is at or approaching; null once cleared or cancelled.",
+      "oneOf": [{ "$ref": "#/$defs/intersectionId" }, { "type": "null" }]
+    },
+    "status": {
+      "description": "active while the corridor is running; cleared when the vehicle has passed end_id; cancelled when the operator stops it early.",
+      "type": "string",
+      "enum": ["active", "cleared", "cancelled"]
+    },
+    "started_at": {
+      "description": "When the operator started the emergency (ISO 8601, UTC).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "cleared_at": {
+      "description": "When the emergency was cleared or cancelled (ISO 8601, UTC); null while active.",
+      "oneOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }]
+    }
+  },
+  "$defs": {
+    "intersectionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "vehicleType": {
+      "type": "string",
+      "enum": ["ambulance", "fire", "police"]
+    },
+    "startRequest": {
+      "description": "Body of POST /api/emergencies (proposed). Operator or Admin only.",
+      "type": "object",
+      "required": ["vehicle_type", "start_id", "end_id"],
+      "properties": {
+        "vehicle_type": { "$ref": "#/$defs/vehicleType" },
+        "start_id": { "$ref": "#/$defs/intersectionId" },
+        "end_id": { "$ref": "#/$defs/intersectionId" }
+      },
+      "additionalProperties": false
+    },
+    "emergencyUpdate": {
+      "description": "Payload of the emergency_update socket event (proposed), sent when an emergency starts or moves to the next intersection.",
+      "type": "object",
+      "required": ["emergency"],
+      "properties": {
+        "emergency": { "$ref": "#" }
+      }
+    },
+    "emergencyCleared": {
+      "description": "Payload of the emergency_cleared socket event (proposed), sent when an emergency is cleared or cancelled.",
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "examples": [
+    {
+      "id": "EMG_0001",
+      "vehicle_type": "ambulance",
+      "start_id": "INT_001",
+      "end_id": "INT_007",
+      "route": ["INT_001", "INT_004", "INT_006", "INT_007"],
+      "current_id": "INT_004",
+      "status": "active",
+      "started_at": "2026-10-18T09:30:00Z",
+      "cleared_at": null
+    },
+    {
+      "id": "EMG_0002",
+      "vehicle_type": "fire",
+      "start_id": "INT_002",
+      "end_id": "INT_008",
+      "route": ["INT_002", "INT_005", "INT_008"],
+      "current_id": null,
+      "status": "cleared",
+      "started_at": "2026-10-18T10:00:00Z",
+      "cleared_at": "2026-10-18T10:06:40Z"
+    }
+  ]
+}

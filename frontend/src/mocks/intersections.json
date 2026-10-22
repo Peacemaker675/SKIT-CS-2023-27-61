@@ -11,20 +11,69 @@
     "name": "Placeholder Intersection 2",
     "lat": 26.827,
     "lng": 75.872,
-    "neighbors": ["INT_001", "INT_003"]
+    "neighbors": ["INT_001", "INT_003", "INT_005"]
   },
   {
     "id": "INT_003",
     "name": "Placeholder Intersection 3",
     "lat": 26.8205,
     "lng": 75.879,
-    "neighbors": ["INT_002", "INT_004"]
+    "neighbors": ["INT_002", "INT_004", "INT_005"]
   },
   {
     "id": "INT_004",
     "name": "Placeholder Intersection 4",
     "lat": 26.816,
     "lng": 75.869,
-    "neighbors": ["INT_001", "INT_003"]
+    "neighbors": ["INT_001", "INT_003", "INT_006"]
+  },
+  {
+    "id": "INT_005",
+    "name": "Placeholder Intersection 5",
+    "lat": 26.8285,
+    "lng": 75.8815,
+    "neighbors": ["INT_002", "INT_003", "INT_008"]
+  },
+  {
+    "id": "INT_006",
+    "name": "Placeholder Intersection 6",
+    "lat": 26.8105,
+    "lng": 75.8735,
+    "neighbors": ["INT_004", "INT_007", "INT_009"]
+  },
+  {
+    "id": "INT_007",
+    "name": "Placeholder Intersection 7",
+    "lat": 26.8075,
+    "lng": 75.8825,
+    "neighbors": ["INT_006", "INT_008", "INT_010"]
+  },
+  {
+    "id": "INT_008",
+    "name": "Placeholder Intersection 8",
+    "lat": 26.8195,
+    "lng": 75.8885,
+    "neighbors": ["INT_005", "INT_007"]
+  },
+  {
+    "id": "INT_009",
+    "name": "Placeholder Intersection 9",
+    "lat": 26.8045,
+    "lng": 75.8665,
+    "neighbors": ["INT_006", "INT_010"]
+  },
+  {
+    "id": "INT_010",
+    "name": "Placeholder Intersection 10",
+    "lat": 26.801,
+    "lng": 75.879,
+    "neighbors": ["INT_007", "INT_009"]
+  },
+  {
+    "id": "INT_011",
+    "name": "Placeholder Intersection 11",
+    "lat": 26.833,
+    "lng": 75.859,
+    "neighbors": []
   }
 ]

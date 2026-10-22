@@ -1,5 +1,9 @@
 import { CONGESTION, congestionLevel } from "../lib/congestion.js";
+import { normalizeState } from "../lib/normalizeState.js";
 import { MapPinIcon } from "./icons.jsx";
+import LaneMetricsTable from "./LaneMetricsTable.jsx";
+import LastUpdated from "./LastUpdated.jsx";
+import SignalPhaseIndicator from "./SignalPhaseIndicator.jsx";
 
 // Fields the backend currently stores per update
 // (backend/app/influx_models/TrafficPoint.py).
@@ -52,6 +56,7 @@ export default function IntersectionDetailPanel({
   }
 
   const { label, color } = CONGESTION[congestionLevel(data)];
+  const state = normalizeState(data);
 
   return (
     <aside className="panel">
@@ -63,14 +68,19 @@ export default function IntersectionDetailPanel({
         </span>
       </p>
       {data ? (
-        <dl className="metrics">
-          {FIELDS.map(([key, name]) => (
-            <div key={key}>
-              <dt>{name}</dt>
-              <dd>{formatValue(data[key])}</dd>
-            </div>
-          ))}
-        </dl>
+        <>
+          <LastUpdated timestamp={state.timestamp} />
+          <SignalPhaseIndicator phase={state.phase} phaseEnd={data.phase_end} />
+          <dl className="metrics">
+            {FIELDS.map(([key, name]) => (
+              <div key={key}>
+                <dt>{name}</dt>
+                <dd>{formatValue(data[key])}</dd>
+              </div>
+            ))}
+          </dl>
+          <LaneMetricsTable lanes={state.lanes} />
+        </>
       ) : (
         <p className="muted">Waiting for live data from this intersection…</p>
       )}

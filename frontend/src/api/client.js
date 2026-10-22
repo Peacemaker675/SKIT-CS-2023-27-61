@@ -85,4 +85,20 @@ export const intersectionsApi = {
       throw err;
     }
   },
+  // Latest known state per intersection, so a panel can render instantly
+  // instead of waiting for the next socket push. Returns { [id]: data }.
+  // ASSUMPTION: the backend has no such route yet. The path below
+  // (GET /api/intersections/latest?ids=a,b) follows the intersections
+  // blueprint prefix and must be confirmed with the backend owner.
+  latest: async (ids = []) => {
+    const query = encodeURIComponent(ids.join(","));
+    try {
+      return (await apiRequest(`/intersections/latest?ids=${query}`)) || {};
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        return {};
+      }
+      throw err;
+    }
+  },
 };

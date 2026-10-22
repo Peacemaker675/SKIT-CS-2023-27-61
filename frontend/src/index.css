@@ -769,6 +769,71 @@ button.primary-gradient:hover:not(:disabled) {
   font-weight: 600;
 }
 
+<<<<<<< ours
+.lane-table {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.lane-table th,
+.lane-table td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+
+.lane-table thead th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.lane-table th:first-child {
+  text-align: left;
+}
+
+.lane-table tbody th {
+  font-weight: 600;
+=======
+/* ---- Signal phase indicator ---- */
+.phase-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* Same green as the "Smooth" congestion marker (lib/congestion.js). */
+.phase-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #2e9e44;
+  box-shadow: 0 0 0 3px rgba(46, 158, 68, 0.2);
+}
+
+.phase-unknown .phase-dot {
+  background: var(--muted);
+  box-shadow: none;
+}
+
+.phase-unknown .phase-label,
+.phase-timer {
+  color: var(--muted);
+}
+
+.phase-timer {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+>>>>>>> theirs
+}
+
 /* ---- Small screens ---- */
 @media (max-width: 760px) {
   .live-monitoring {
@@ -807,4 +872,21 @@ button.primary-gradient:hover:not(:disabled) {
     height: 38px;
     padding: 0;
   }
+}
+
+.last-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stale-badge {
+  padding: 1px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 11px;
 }

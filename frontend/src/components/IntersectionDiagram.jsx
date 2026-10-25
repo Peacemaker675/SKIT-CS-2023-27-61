@@ -126,7 +126,13 @@ export default function IntersectionDiagram({ lanes = [], phase = null }) {
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       role="img"
       aria-label={`Intersection with ${real.length} lanes`}
-      style={{ width: "100%", maxWidth: 260, display: "block" }}
+      // Scales with the panel, capped so it doesn't dominate wide screens.
+      style={{
+        width: "100%",
+        maxWidth: 240,
+        display: "block",
+        margin: "12px auto",
+      }}
     >
       <rect
         x={CENTER - half}

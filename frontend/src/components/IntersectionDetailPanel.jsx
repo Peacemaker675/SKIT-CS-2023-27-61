@@ -1,6 +1,7 @@
 import { CONGESTION, congestionLevel } from "../lib/congestion.js";
 import { normalizeState } from "../lib/normalizeState.js";
 import { MapPinIcon } from "./icons.jsx";
+import IntersectionDiagram from "./IntersectionDiagram.jsx";
 import LaneMetricsTable from "./LaneMetricsTable.jsx";
 import LastUpdated from "./LastUpdated.jsx";
 import SignalPhaseIndicator from "./SignalPhaseIndicator.jsx";
@@ -73,6 +74,7 @@ export default function IntersectionDetailPanel({
         <>
           <LastUpdated timestamp={state.timestamp} />
           <SignalPhaseIndicator phase={state.phase} phaseEnd={data.phase_end} />
+          <IntersectionDiagram lanes={state.lanes} phase={state.phase} />
           <dl className="metrics">
             {FIELDS.map(([key, name]) => (
               <div key={key}>

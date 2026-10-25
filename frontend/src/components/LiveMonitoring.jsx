@@ -5,6 +5,7 @@ import IntersectionMap from "./IntersectionMap.jsx";
 import IntersectionDetailPanel from "./IntersectionDetailPanel.jsx";
 import CongestionSummaryList from "./CongestionSummaryList.jsx";
 import CongestionCounts from "./CongestionCounts.jsx";
+import AlertFeed from "./AlertFeed.jsx";
 
 // SRS Tab 1 (Live Monitoring): map of all intersections plus the detail panel
 // for the selected one.
@@ -63,6 +64,7 @@ export default function LiveMonitoring() {
           />
         </div>
       </section>
+      <AlertFeed intersections={intersections} liveData={liveData} />
     </>
   );
 }

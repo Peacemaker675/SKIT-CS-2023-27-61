@@ -55,6 +55,8 @@ export default function LiveMonitoring() {
         <CongestionSummaryList
           intersections={intersections}
           liveData={liveData}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
         />
       </div>
     </section>

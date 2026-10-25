@@ -13,8 +13,14 @@ export function sortByCongestion(intersections, liveData) {
     );
 }
 
-// All intersections from Heavy to Smooth, shown beside the map.
-export default function CongestionSummaryList({ intersections, liveData }) {
+// All intersections from Heavy to Smooth, shown beside the map. Clicking a
+// row selects that intersection, same as clicking its marker.
+export default function CongestionSummaryList({
+  intersections,
+  liveData,
+  selectedId,
+  onSelect,
+}) {
   if (!intersections.length) return null;
 
   return (
@@ -25,13 +31,20 @@ export default function CongestionSummaryList({ intersections, liveData }) {
           const { label, color } = CONGESTION[i.level];
           return (
             <li key={i.id}>
-              <span
-                className="congestion-dot"
-                style={{ background: color }}
-                aria-hidden="true"
-              />
-              <span className="congestion-name">{i.name || i.id}</span>
-              <span className="congestion-level">{label}</span>
+              <button
+                type="button"
+                className="congestion-row"
+                aria-pressed={i.id === selectedId}
+                onClick={() => onSelect(i.id)}
+              >
+                <span
+                  className="congestion-dot"
+                  style={{ background: color }}
+                  aria-hidden="true"
+                />
+                <span className="congestion-name">{i.name || i.id}</span>
+                <span className="congestion-level">{label}</span>
+              </button>
             </li>
           );
         })}

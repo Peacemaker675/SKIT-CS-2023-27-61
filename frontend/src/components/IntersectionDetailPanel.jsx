@@ -4,6 +4,7 @@ import { MapPinIcon } from "./icons.jsx";
 import LaneMetricsTable from "./LaneMetricsTable.jsx";
 import LastUpdated from "./LastUpdated.jsx";
 import SignalPhaseIndicator from "./SignalPhaseIndicator.jsx";
+import VideoFeedPlaceholder from "./VideoFeedPlaceholder.jsx";
 
 // Fields the backend currently stores per update
 // (backend/app/influx_models/TrafficPoint.py).
@@ -60,6 +61,7 @@ export default function IntersectionDetailPanel({
 
   return (
     <aside className="panel">
+      <VideoFeedPlaceholder name={intersection.name || intersection.id} />
       <h2>{intersection.name || intersection.id}</h2>
       <p className="muted">
         {intersection.id}

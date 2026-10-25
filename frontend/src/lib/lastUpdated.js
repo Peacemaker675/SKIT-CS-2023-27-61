@@ -20,10 +20,12 @@ export function formatAge(ageMs) {
 
 export function lastUpdatedInfo(timestamp, now = Date.now()) {
   const ms = toMillis(timestamp);
-  if (ms === null) return { label: "No updates yet", stale: false };
+  if (ms === null)
+    return { label: "No updates yet", stale: false, ageMs: null };
   const age = now - ms;
   return {
     label: `Last updated ${formatAge(age)} ago`,
     stale: age > STALE_AFTER_MS,
+    ageMs: age,
   };
 }

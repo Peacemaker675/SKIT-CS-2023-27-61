@@ -1,0 +1,159 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "checkingSession": "Checking session…",
+    "logout": "Log out",
+    "comingSoon": "Coming soon",
+    "switchLanguage": "Switch to Hindi",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode"
+  },
+  "roles": {
+    "admin": "admin",
+    "operator": "operator",
+    "analyst": "analyst"
+  },
+  "tabs": {
+    "live": "Live Monitoring",
+    "analytics": "Analytics",
+    "forecast": "Forecast",
+    "system": "System Management",
+    "navLabel": "Dashboard sections"
+  },
+  "login": {
+    "tagline": "AI-powered traffic signal control",
+    "title": "Sign in to continue",
+    "username": "Username",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "required": "Username and password are required.",
+    "invalid": "Invalid username or password.",
+    "failed": "Login failed ({status}). Please try again.",
+    "offline": "Cannot reach the server. Please try again."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "This page doesn't exist or has moved.",
+    "home": "Go home"
+  },
+  "unauthorized": {
+    "title": "Access denied",
+    "roleText": "Your role \"{role}\" does not have access to this page.",
+    "signInText": "You need to sign in to view this page.",
+    "dashboard": "Go to my dashboard",
+    "login": "Go to login"
+  },
+  "comingSoonCard": {
+    "title": "{label} is on the way",
+    "text": "This section is being built. Check back soon for the full view."
+  },
+  "panels": {
+    "analytics": {
+      "filters": {
+        "title": "Query Filters",
+        "text": "Filter historical data by date range, intersection, weather and events."
+      },
+      "volume": {
+        "title": "Traffic Volume",
+        "text": "Line chart of vehicle counts over time."
+      },
+      "wait": {
+        "title": "Average Wait Time",
+        "text": "Bar chart of average wait time per intersection and lane."
+      },
+      "heatmap": {
+        "title": "Congestion Heatmap",
+        "text": "Congestion levels by intersection and hour of day."
+      },
+      "csv": {
+        "title": "CSV Export",
+        "text": "Download the filtered data as a CSV file."
+      },
+      "table": {
+        "title": "Data Table",
+        "text": "Raw historical traffic records matching the current filters."
+      }
+    },
+    "forecast": {
+      "map": {
+        "title": "Predictive Map",
+        "text": "Map of predicted congestion with a time slider for the forecast horizon."
+      },
+      "insights": {
+        "title": "Predictive Insights",
+        "text": "Upcoming congestion warnings and suggested actions."
+      }
+    },
+    "system": {
+      "users": {
+        "title": "User Management",
+        "text": "Add, edit and deactivate operator, analyst and admin accounts."
+      },
+      "intersections": {
+        "title": "Intersection Configuration",
+        "text": "Register intersections with their ID, GPS coordinates and neighbouring intersections."
+      },
+      "health": {
+        "title": "System Health Monitor",
+        "text": "Status of the API, Redis, InfluxDB, PostgreSQL and the RL agents."
+      }
+    }
+  },
+  "congestion": {
+    "title": "Congestion",
+    "countsLabel": "Intersections by congestion",
+    "smooth": "Smooth",
+    "moderate": "Moderate",
+    "heavy": "Heavy",
+    "unknown": "No data"
+  },
+  "lanes": {
+    "lane": "Lane",
+    "count": "Vehicle Count",
+    "queue": "Queue Length (m)",
+    "wait": "Avg Wait (s)",
+    "all": "All lanes"
+  },
+  "phase": {
+    "unknown": "Phase unknown",
+    "green": "Green:",
+    "left": "{time} left",
+    "elapsed": "{time} elapsed"
+  },
+  "lastUpdated": {
+    "never": "No updates yet",
+    "seconds": "Last updated {n}s ago",
+    "minutes": "Last updated {n}m ago",
+    "stale": "Stale"
+  },
+  "diagram": {
+    "label": "Intersection with {n} lanes",
+    "noLanes": "No per-lane data for a diagram yet.",
+    "greenSuffix": " (green)",
+    "queue": ", queue {n} m"
+  },
+  "video": {
+    "alt": "Sample camera view for {name}",
+    "tag": "Sample",
+    "text": "Live camera feed not connected yet"
+  },
+  "alerts": {
+    "title": "Alerts",
+    "empty": "No alerts yet.",
+    "types": {
+      "heavy": "Heavy congestion",
+      "stale": "Feed stale",
+      "event": "Special event",
+      "manual": "Manual mode"
+    },
+    "messages": {
+      "heavy": "Congestion rose to Heavy",
+      "stale": "No update for over 30s",
+      "event": "Special event reported",
+      "manual": "Signal switched to manual"
+    }
+  }
+}

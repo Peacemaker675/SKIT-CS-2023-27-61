@@ -5,12 +5,15 @@ import { defaultTabFor, tabsFor } from "../config/tabs.js";
 import { ApiError } from "../api/client.js";
 import Brand from "../components/layout/Brand.jsx";
 import ThemeToggle from "../components/layout/ThemeToggle.jsx";
+import LanguageToggle from "../components/layout/LanguageToggle.jsx";
+import { useT } from "../i18n/i18n.js";
 import { EyeIcon, EyeOffIcon } from "../components/icons.jsx";
 
 export default function Login() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useT();
 
   const [officialId, setOfficialId] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +35,7 @@ export default function Login() {
     setError("");
 
     if (!officialId.trim() || !password.trim()) {
-      setError("Username and password are required.");
+      setError(t("login.required"));
       return;
     }
 
@@ -47,11 +50,11 @@ export default function Login() {
       navigate(canSee ? from : home, { replace: true });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        setError("Invalid username or password.");
+        setError(t("login.invalid"));
       } else if (err instanceof ApiError) {
-        setError(`Login failed (${err.status}). Please try again.`);
+        setError(t("login.failed", { status: err.status }));
       } else {
-        setError("Cannot reach the server. Please try again.");
+        setError(t("login.offline"));
       }
     } finally {
       setSubmitting(false);
@@ -61,18 +64,19 @@ export default function Login() {
   return (
     <div className="center auth-bg">
       <div className="auth-corner">
+        <LanguageToggle />
         <ThemeToggle />
       </div>
       <form className="card auth-card" onSubmit={handleSubmit} noValidate>
         <div className="auth-header">
           <Brand size={48} className="brand-lg" />
-          <p className="muted">AI-powered traffic signal control</p>
+          <p className="muted">{t("login.tagline")}</p>
         </div>
 
-        <h1 className="auth-title">Sign in to continue</h1>
+        <h1 className="auth-title">{t("login.title")}</h1>
 
         {/* Labelled "Username", but the backend logs in by official ID. */}
-        <label htmlFor="official_id">Username</label>
+        <label htmlFor="official_id">{t("login.username")}</label>
         <input
           id="official_id"
           name="official_id"
@@ -83,7 +87,7 @@ export default function Login() {
           autoFocus
         />
 
-        <label htmlFor="password">Password</label>
+        <label htmlFor="password">{t("login.password")}</label>
         <div className="password-field">
           <input
             id="password"
@@ -98,8 +102,12 @@ export default function Login() {
             type="button"
             className="icon-button"
             onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            title={showPassword ? "Hide password" : "Show password"}
+            aria-label={t(
+              showPassword ? "login.hidePassword" : "login.showPassword",
+            )}
+            title={t(
+              showPassword ? "login.hidePassword" : "login.showPassword",
+            )}
           >
             {showPassword ? <EyeOffIcon /> : <EyeIcon />}
           </button>
@@ -116,7 +124,7 @@ export default function Login() {
           className="primary-gradient"
           disabled={submitting}
         >
-          {submitting ? "Signing in…" : "Sign in"}
+          {submitting ? t("login.submitting") : t("login.submit")}
         </button>
       </form>
     </div>

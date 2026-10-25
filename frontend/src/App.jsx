@@ -24,7 +24,7 @@ const TAB_CONTENT = {
 // Sends "/" (and "/dashboard") to the login page or the user's default tab.
 function HomeRedirect() {
   const { user, checking } = useAuth();
-  if (checking) return <Spinner label="Checking session…" />;
+  if (checking) return <Spinner labelKey="common.checkingSession" />;
   if (!user) return <Navigate to="/login" replace />;
   return (
     <Navigate to={defaultTabFor(user.role)?.path || "/unauthorized"} replace />
@@ -46,7 +46,7 @@ export default function App() {
               <Route
                 path={tab.key}
                 element={
-                  TAB_CONTENT[tab.key] || <ComingSoon label={tab.label} />
+                  TAB_CONTENT[tab.key] || <ComingSoon tabKey={tab.key} />
                 }
               />
             </Route>

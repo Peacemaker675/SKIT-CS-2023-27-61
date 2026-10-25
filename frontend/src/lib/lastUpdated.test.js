@@ -31,6 +31,7 @@ describe("lastUpdatedInfo", () => {
     expect(lastUpdatedInfo(null, now)).toEqual({
       label: "No updates yet",
       stale: false,
+      ageMs: null,
     });
   });
 
@@ -38,6 +39,7 @@ describe("lastUpdatedInfo", () => {
     expect(lastUpdatedInfo(now - 30_000, now)).toEqual({
       label: "Last updated 30s ago",
       stale: false,
+      ageMs: 30_000,
     });
     expect(lastUpdatedInfo(now - 31_000, now).stale).toBe(true);
   });

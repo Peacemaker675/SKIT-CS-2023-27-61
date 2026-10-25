@@ -1,3 +1,5 @@
+import { useT } from "../i18n/i18n.js";
+
 // SRS Tab 1, Component 2: top-down diagram of a 4-way intersection, one strip
 // per lane from normalizeState().lanes.
 
@@ -104,11 +106,12 @@ const MIN_QUEUE_SCALE = 10;
 const GREEN = "#2e9e44";
 
 export default function IntersectionDiagram({ lanes = [], phase = null }) {
+  const { t } = useT();
   // The flat backend payload only has an "all" row, so there is nothing
   // per-lane to draw yet.
   const real = lanes.filter((lane) => lane.id !== "all");
   if (!real.length) {
-    return <p className="muted">No per-lane data for a diagram yet.</p>;
+    return <p className="muted">{t("diagram.noLanes")}</p>;
   }
 
   const sides = lanesBySide(real);
@@ -125,7 +128,7 @@ export default function IntersectionDiagram({ lanes = [], phase = null }) {
       className="intersection-diagram"
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       role="img"
-      aria-label={`Intersection with ${real.length} lanes`}
+      aria-label={t("diagram.label", { n: real.length })}
       // Scales with the panel, capped so it doesn't dominate wide screens.
       style={{
         width: "100%",
@@ -149,12 +152,12 @@ export default function IntersectionDiagram({ lanes = [], phase = null }) {
           const queue =
             lane.queue === null || lane.queue === undefined
               ? ""
-              : `, queue ${lane.queue} m`;
+              : t("diagram.queue", { n: lane.queue });
           return (
             <g key={lane.id}>
               <title>
                 {lane.id}
-                {isGreen ? " (green)" : ""}
+                {isGreen ? t("diagram.greenSuffix") : ""}
                 {queue}
               </title>
               <rect

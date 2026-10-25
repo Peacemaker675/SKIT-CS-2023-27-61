@@ -5,58 +5,54 @@ import {
   MapPinIcon,
   SettingsIcon,
 } from "../../components/icons.jsx";
+import { useT } from "../../i18n/i18n.js";
 
 // SRS Tab 2 (Analytics): placeholder panels for now.
 const PANELS = [
   {
     id: "analytics-query-filters",
-    title: "Query Filters",
-    description:
-      "Filter historical data by date range, intersection, weather and events.",
+    key: "panels.analytics.filters",
     wide: true,
     Icon: SettingsIcon,
   },
   {
     id: "analytics-traffic-volume",
-    title: "Traffic Volume",
-    description: "Line chart of vehicle counts over time.",
+    key: "panels.analytics.volume",
     wide: false,
     Icon: LiveIcon,
   },
   {
     id: "analytics-average-wait-time",
-    title: "Average Wait Time",
-    description: "Bar chart of average wait time per intersection and lane.",
+    key: "panels.analytics.wait",
     wide: false,
     Icon: ClockIcon,
   },
   {
     id: "analytics-congestion-heatmap",
-    title: "Congestion Heatmap",
-    description: "Congestion levels by intersection and hour of day.",
+    key: "panels.analytics.heatmap",
     wide: false,
     Icon: MapPinIcon,
   },
   {
     id: "analytics-csv-export",
-    title: "CSV Export",
-    description: "Download the filtered data as a CSV file.",
+    key: "panels.analytics.csv",
     wide: false,
     Icon: ChartIcon,
   },
   {
     id: "analytics-data-table",
-    title: "Data Table",
-    description: "Raw historical traffic records matching the current filters.",
+    key: "panels.analytics.table",
     wide: true,
     Icon: ChartIcon,
   },
 ];
 
 export default function AnalyticsTab() {
+  const { t } = useT();
+
   return (
     <div className="tab-grid">
-      {PANELS.map(({ id, title, description, wide, Icon }) => (
+      {PANELS.map(({ id, key, wide, Icon }) => (
         <section
           key={id}
           className={wide ? "section-panel wide" : "section-panel"}
@@ -66,10 +62,10 @@ export default function AnalyticsTab() {
             <span className="section-icon">
               <Icon size={18} />
             </span>
-            <h2 id={id}>{title}</h2>
-            <span className="soon-chip">Coming soon</span>
+            <h2 id={id}>{t(`${key}.title`)}</h2>
+            <span className="soon-chip">{t("common.comingSoon")}</span>
           </header>
-          <p className="muted">{description}</p>
+          <p className="muted">{t(`${key}.text`)}</p>
         </section>
       ))}
     </div>

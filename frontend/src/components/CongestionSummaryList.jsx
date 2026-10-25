@@ -1,4 +1,5 @@
 import { CONGESTION, congestionLevel } from "../lib/congestion.js";
+import { useT } from "../i18n/i18n.js";
 
 const ORDER = ["heavy", "moderate", "smooth", "unknown"];
 
@@ -21,14 +22,15 @@ export default function CongestionSummaryList({
   selectedId,
   onSelect,
 }) {
+  const { t } = useT();
   if (!intersections.length) return null;
 
   return (
     <section className="panel congestion-list">
-      <h2>Congestion</h2>
+      <h2>{t("congestion.title")}</h2>
       <ul>
         {sortByCongestion(intersections, liveData).map((i) => {
-          const { label, color } = CONGESTION[i.level];
+          const { color } = CONGESTION[i.level];
           return (
             <li key={i.id}>
               <button
@@ -43,7 +45,9 @@ export default function CongestionSummaryList({
                   aria-hidden="true"
                 />
                 <span className="congestion-name">{i.name || i.id}</span>
-                <span className="congestion-level">{label}</span>
+                <span className="congestion-level">
+                  {t(`congestion.${i.level}`)}
+                </span>
               </button>
             </li>
           );

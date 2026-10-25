@@ -1,4 +1,5 @@
 import { CONGESTION, congestionLevel } from "../lib/congestion.js";
+import { useT } from "../i18n/i18n.js";
 
 const ORDER = ["smooth", "moderate", "heavy", "unknown"];
 
@@ -11,10 +12,11 @@ export function countByLevel(intersections, liveData) {
 
 // Strip above the Live tab: n Smooth / Moderate / Heavy / No data.
 export default function CongestionCounts({ intersections, liveData }) {
+  const { t } = useT();
   const counts = countByLevel(intersections, liveData);
 
   return (
-    <ul className="congestion-counts" aria-label="Intersections by congestion">
+    <ul className="congestion-counts" aria-label={t("congestion.countsLabel")}>
       {ORDER.map((level) => (
         <li key={level}>
           <span
@@ -22,7 +24,7 @@ export default function CongestionCounts({ intersections, liveData }) {
             style={{ background: CONGESTION[level].color }}
             aria-hidden="true"
           />
-          <strong>{counts[level]}</strong> {CONGESTION[level].label}
+          <strong>{counts[level]}</strong> {t(`congestion.${level}`)}
         </li>
       ))}
     </ul>

@@ -9,7 +9,7 @@ export default function ProtectedRoute({ roles }) {
   const location = useLocation();
 
   if (checking) {
-    return <Spinner label="Checking session…" />;
+    return <Spinner labelKey="common.checkingSession" />;
   }
 
   if (!user) {

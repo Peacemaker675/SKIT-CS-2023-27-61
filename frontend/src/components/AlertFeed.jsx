@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { ALERT_TYPES, staleAlerts, transitionAlerts } from "../lib/alerts.js";
+import { staleAlerts, transitionAlerts } from "../lib/alerts.js";
+import { useT } from "../i18n/i18n.js";
 
 export const MAX_ALERTS = 20;
 const STALE_CHECK_MS = 5000;
 
-function formatTime(ms) {
-  return new Date(ms).toLocaleTimeString([], {
+function formatTime(ms, lang) {
+  return new Date(ms).toLocaleTimeString(lang === "hi" ? "hi-IN" : "en-IN", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -14,6 +15,7 @@ function formatTime(ms) {
 
 // SRS Tab 1, Component 3: system-wide alert feed, newest first, last 20.
 export default function AlertFeed({ intersections, liveData }) {
+  const { lang, t } = useT();
   const [alerts, setAlerts] = useState([]);
   const prev = useRef({});
   const stale = useRef(new Set());
@@ -52,19 +54,20 @@ export default function AlertFeed({ intersections, liveData }) {
 
   return (
     <section className="panel alert-feed" aria-live="polite">
-      <h2>Alerts</h2>
+      <h2>{t("alerts.title")}</h2>
       {alerts.length === 0 ? (
-        <p className="muted">No alerts yet.</p>
+        <p className="muted">{t("alerts.empty")}</p>
       ) : (
         <ol>
           {alerts.map((a) => (
             <li key={a.key} className={`alert alert-${a.type}`}>
               <time dateTime={new Date(a.time).toISOString()}>
-                {formatTime(a.time)}
+                {formatTime(a.time, lang)}
               </time>
-              <span className="alert-type">{ALERT_TYPES[a.type]}</span>
+              <span className="alert-type">{t(`alerts.types.${a.type}`)}</span>
               <span className="alert-text">
-                {names[a.intersectionId] || a.intersectionId}: {a.message}
+                {names[a.intersectionId] || a.intersectionId}:{" "}
+                {t(`alerts.messages.${a.type}`)}
               </span>
             </li>
           ))}

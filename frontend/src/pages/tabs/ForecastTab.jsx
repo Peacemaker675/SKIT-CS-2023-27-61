@@ -1,28 +1,28 @@
 import { CompassIcon, ForecastIcon } from "../../components/icons.jsx";
+import { useT } from "../../i18n/i18n.js";
 
 // SRS Tab 3 (Forecast): placeholder panels for now.
 const PANELS = [
   {
     id: "forecast-predictive-map",
-    title: "Predictive Map",
-    description:
-      "Map of predicted congestion with a time slider for the forecast horizon.",
+    key: "panels.forecast.map",
     wide: true,
     Icon: CompassIcon,
   },
   {
     id: "forecast-predictive-insights",
-    title: "Predictive Insights",
-    description: "Upcoming congestion warnings and suggested actions.",
+    key: "panels.forecast.insights",
     wide: false,
     Icon: ForecastIcon,
   },
 ];
 
 export default function ForecastTab() {
+  const { t } = useT();
+
   return (
     <div className="tab-grid">
-      {PANELS.map(({ id, title, description, wide, Icon }) => (
+      {PANELS.map(({ id, key, wide, Icon }) => (
         <section
           key={id}
           className={wide ? "section-panel wide" : "section-panel"}
@@ -32,10 +32,10 @@ export default function ForecastTab() {
             <span className="section-icon">
               <Icon size={18} />
             </span>
-            <h2 id={id}>{title}</h2>
-            <span className="soon-chip">Coming soon</span>
+            <h2 id={id}>{t(`${key}.title`)}</h2>
+            <span className="soon-chip">{t("common.comingSoon")}</span>
           </header>
-          <p className="muted">{description}</p>
+          <p className="muted">{t(`${key}.text`)}</p>
         </section>
       ))}
     </div>

@@ -48,16 +48,57 @@ function laneRect(side, i, count, half) {
   return { x: CENTER + half, y: across, width: length, height: LANE };
 }
 
+// Room kept at the outer end of each lane for its label.
+const LABEL_ROOM = 22;
+
+// Label sits at the outer (map edge) end of the lane.
 function labelPos(rect, side) {
+  const end = LABEL_ROOM / 2;
+  const x =
+    side === "W"
+      ? rect.x + end
+      : side === "E"
+        ? rect.x + rect.width - end
+        : rect.x + rect.width / 2;
+  const y =
+    side === "N"
+      ? rect.y + end
+      : side === "S"
+        ? rect.y + rect.height - end
+        : rect.y + rect.height / 2;
   const vertical = side === "N" || side === "S";
-  return {
-    x: rect.x + rect.width / 2,
-    y: rect.y + rect.height / 2,
-    transform: vertical
-      ? `rotate(-90 ${rect.x + rect.width / 2} ${rect.y + rect.height / 2})`
-      : undefined,
-  };
+  return { x, y, transform: vertical ? `rotate(-90 ${x} ${y})` : undefined };
 }
+
+// Queue bar growing back from the stop line; `share` is 0..1 of the room
+// left after the label.
+function queueRect(rect, side, share) {
+  const vertical = side === "N" || side === "S";
+  const room = (vertical ? rect.height : rect.width) - LABEL_ROOM;
+  const len = Math.max(0, Math.min(1, share)) * room;
+  const inset = LANE * 0.25;
+  if (side === "N")
+    return {
+      x: rect.x + inset,
+      y: rect.y + rect.height - len,
+      width: LANE / 2,
+      height: len,
+    };
+  if (side === "S")
+    return { x: rect.x + inset, y: rect.y, width: LANE / 2, height: len };
+  if (side === "W")
+    return {
+      x: rect.x + rect.width - len,
+      y: rect.y + inset,
+      width: len,
+      height: LANE / 2,
+    };
+  return { x: rect.x, y: rect.y + inset, width: len, height: LANE / 2 };
+}
+
+// Bars are scaled to the longest queue here, but never below this many
+// metres so short queues don't fill the lane.
+const MIN_QUEUE_SCALE = 10;
 
 // Same green as the "Smooth" congestion marker (lib/congestion.js).
 const GREEN = "#2e9e44";
@@ -74,6 +115,10 @@ export default function IntersectionDiagram({ lanes = [], phase = null }) {
   const widest = Math.max(1, ...SIDES.map((s) => sides[s].length));
   const half = (widest * LANE) / 2 + 4;
   const green = greenLaneIds(real, phase);
+  const queueScale = Math.max(
+    MIN_QUEUE_SCALE,
+    ...real.map((lane) => lane.queue ?? 0),
+  );
 
   return (
     <svg
@@ -95,9 +140,17 @@ export default function IntersectionDiagram({ lanes = [], phase = null }) {
           const rect = laneRect(side, i, sides[side].length, half);
           const label = labelPos(rect, side);
           const isGreen = green.has(lane.id);
+          const queue =
+            lane.queue === null || lane.queue === undefined
+              ? ""
+              : `, queue ${lane.queue} m`;
           return (
             <g key={lane.id}>
-              <title>{isGreen ? `${lane.id} (green)` : lane.id}</title>
+              <title>
+                {lane.id}
+                {isGreen ? " (green)" : ""}
+                {queue}
+              </title>
               <rect
                 {...rect}
                 style={{
@@ -105,6 +158,14 @@ export default function IntersectionDiagram({ lanes = [], phase = null }) {
                   stroke: isGreen ? GREEN : "var(--border)",
                 }}
               />
+              {lane.queue > 0 && (
+                <rect
+                  className="queue-bar"
+                  {...queueRect(rect, side, lane.queue / queueScale)}
+                  rx={2}
+                  style={{ fill: isGreen ? "#ffffff" : "var(--accent)" }}
+                />
+              )}
               <text
                 {...label}
                 textAnchor="middle"

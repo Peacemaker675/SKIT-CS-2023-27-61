@@ -21,6 +21,22 @@ export function lanesBySide(lanes) {
   return sides;
 }
 
+// Ids of lanes that are green in `phase`. Phases look like "lane_1_green"
+// (SRS schema) or "N_GREEN" (mock feed); a side group such as "NS_GREEN"
+// lights every lane on those sides.
+export function greenLaneIds(lanes, phase) {
+  if (!phase) return new Set();
+  const token = phase.replace(/_green$/i, "").toLowerCase();
+  const exact = lanes.filter((lane) => lane.id.toLowerCase() === token);
+  if (exact.length || !/^[nesw]+$/.test(token)) {
+    return new Set(exact.map((lane) => lane.id));
+  }
+  const sides = lanesBySide(lanes);
+  return new Set(
+    [...token.toUpperCase()].flatMap((s) => sides[s].map((lane) => lane.id)),
+  );
+}
+
 // Box for lane `i` of `count` on `side`, drawn from the edge to the box.
 function laneRect(side, i, count, half) {
   const across = CENTER - (count * LANE) / 2 + i * LANE;
@@ -43,7 +59,10 @@ function labelPos(rect, side) {
   };
 }
 
-export default function IntersectionDiagram({ lanes = [] }) {
+// Same green as the "Smooth" congestion marker (lib/congestion.js).
+const GREEN = "#2e9e44";
+
+export default function IntersectionDiagram({ lanes = [], phase = null }) {
   // The flat backend payload only has an "all" row, so there is nothing
   // per-lane to draw yet.
   const real = lanes.filter((lane) => lane.id !== "all");
@@ -54,6 +73,7 @@ export default function IntersectionDiagram({ lanes = [] }) {
   const sides = lanesBySide(real);
   const widest = Math.max(1, ...SIDES.map((s) => sides[s].length));
   const half = (widest * LANE) / 2 + 4;
+  const green = greenLaneIds(real, phase);
 
   return (
     <svg
@@ -74,18 +94,26 @@ export default function IntersectionDiagram({ lanes = [] }) {
         sides[side].map((lane, i) => {
           const rect = laneRect(side, i, sides[side].length, half);
           const label = labelPos(rect, side);
+          const isGreen = green.has(lane.id);
           return (
             <g key={lane.id}>
-              <title>{lane.id}</title>
+              <title>{isGreen ? `${lane.id} (green)` : lane.id}</title>
               <rect
                 {...rect}
-                style={{ fill: "var(--surface-2)", stroke: "var(--border)" }}
+                style={{
+                  fill: isGreen ? GREEN : "var(--surface-2)",
+                  stroke: isGreen ? GREEN : "var(--border)",
+                }}
               />
               <text
                 {...label}
                 textAnchor="middle"
                 dominantBaseline="central"
-                style={{ fill: "var(--muted)", fontSize: 8 }}
+                style={{
+                  fill: isGreen ? "#ffffff" : "var(--muted)",
+                  fontSize: 8,
+                  fontWeight: isGreen ? 600 : 400,
+                }}
               >
                 {lane.id}
               </text>

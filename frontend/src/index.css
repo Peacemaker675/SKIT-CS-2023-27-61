@@ -769,6 +769,52 @@ button.primary-gradient:hover:not(:disabled) {
   font-weight: 600;
 }
 
+/* ---- Live tab side column: detail panel + congestion list ---- */
+.live-side {
+  display: grid;
+  grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 16px;
+  min-height: 0;
+}
+
+.congestion-list ul {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.congestion-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.congestion-list li:last-child {
+  border-bottom: 0;
+}
+
+.congestion-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.congestion-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.congestion-level {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 <<<<<<< ours
 .lane-table {
   width: 100%;

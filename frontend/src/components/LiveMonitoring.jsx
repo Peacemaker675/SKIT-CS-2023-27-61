@@ -3,6 +3,7 @@ import { intersectionsApi } from "../api/client.js";
 import { useIntersectionFeed } from "../realtime/useIntersectionFeed.js";
 import IntersectionMap from "./IntersectionMap.jsx";
 import IntersectionDetailPanel from "./IntersectionDetailPanel.jsx";
+import CongestionSummaryList from "./CongestionSummaryList.jsx";
 
 // SRS Tab 1 (Live Monitoring): map of all intersections plus the detail panel
 // for the selected one.
@@ -42,14 +43,20 @@ export default function LiveMonitoring() {
         selectedId={selectedId}
         onSelect={setSelectedId}
       />
-      <IntersectionDetailPanel
-        intersection={selected}
-        data={selected ? liveData[selected.id] : null}
-        summary={{
-          total: intersections.length,
-          live: ids.filter((id) => liveData[id]).length,
-        }}
-      />
+      <div className="live-side">
+        <IntersectionDetailPanel
+          intersection={selected}
+          data={selected ? liveData[selected.id] : null}
+          summary={{
+            total: intersections.length,
+            live: ids.filter((id) => liveData[id]).length,
+          }}
+        />
+        <CongestionSummaryList
+          intersections={intersections}
+          liveData={liveData}
+        />
+      </div>
     </section>
   );
 }

@@ -636,7 +636,7 @@ button.primary-gradient:hover:not(:disabled) {
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
   gap: 16px;
   /* 60px top bar + ~46px tab nav + title + padding */
-  height: calc(100vh - 200px);
+  height: calc(100vh - 248px);
   min-height: 440px;
 }
 
@@ -767,6 +767,32 @@ button.primary-gradient:hover:not(:disabled) {
 .metrics dd {
   margin: 0;
   font-weight: 600;
+}
+
+/* ---- Live tab congestion counts strip ---- */
+.congestion-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.congestion-counts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.congestion-counts strong {
+  color: var(--text);
 }
 
 /* ---- Live tab side column: detail panel + congestion list ---- */

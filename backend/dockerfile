@@ -10,7 +10,11 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create non-root user
+RUN useradd -m -u 1000 appuser
+
 COPY . .
+RUN chown -R appuser:appuser /app
 
 ENV PYTHONUNBUFFERED=1
 
@@ -18,8 +22,10 @@ ENV PYTHONUNBUFFERED=1
 FROM base AS dev
 # Install any dev tools (optional, e.g., watchdog or debugpy)
 RUN pip install --no-cache-dir watchdog
+USER appuser
 CMD ["flask", "run", "--host=0.0.0.0"]
 
 # ---- Production stage ----
 FROM base AS prod
+USER appuser
 CMD ["gunicorn", "--worker-class", "eventlet", "--bind", "0.0.0.0:5000", "app:create_app()"]

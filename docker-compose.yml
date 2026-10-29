@@ -36,6 +36,40 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  rl_agent:
+    build:
+      context: ./rl_agent
+      dockerfile: dockerfile
+      target: dev
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      PORT: "5001"
+    ports:
+      - "127.0.0.1:5001:5001"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  intersection:
+    build:
+      context: ./intersection
+      dockerfile: dockerfile
+      target: dev
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      INTERSECTION_ID: all
+      TICK_INTERVAL_SECONDS: "3.0"
+      PORT: "5002"
+    ports:
+      - "127.0.0.1:5002:5002"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     environment:

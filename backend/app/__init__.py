@@ -34,7 +34,7 @@ def create_app():
     from app.blueprints.auth import auth
     from app.blueprints.admin import admin
     from app.blueprints.intersections import intersections
-    from app.blueprints.intersections.routes import redis_listener
+    from app.coordination import coordination_listener
 
     app.register_blueprint(main, url_prefix="/api")
     app.register_blueprint(auth, url_prefix="/api/auth")
@@ -48,7 +48,7 @@ def create_app():
 
     register_cli(app)
 
-    socketio.start_background_task(redis_listener, app)
+    socketio.start_background_task(coordination_listener, app)
 
     return app
 

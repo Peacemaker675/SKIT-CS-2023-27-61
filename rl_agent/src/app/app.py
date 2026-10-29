@@ -201,7 +201,8 @@ def start_background_threads():
     t.start()
 
 
-start_background_threads()
+if __name__ == "__main__" or os.getenv("RUN_WORKER", "false").lower() == "true":
+    start_background_threads()
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5001"))

@@ -13,10 +13,28 @@ def admin_required(f):
             verify_jwt_in_request()
             claims = get_jwt()
         except Exception:
-            return jsonify({"msg": "UNAUTHORIZED"}), 401
+            return (
+                jsonify(
+                    {
+                        "code": "UNAUTHORIZED",
+                        "message": "Authentication required",
+                        "msg": "UNAUTHORIZED",
+                    }
+                ),
+                401,
+            )
 
         if claims.get("role") != "admin":
-            return jsonify({"msg": "ADMIN_PRIVILEGES_REQUIRED"}), 403
+            return (
+                jsonify(
+                    {
+                        "code": "ADMIN_PRIVILEGES_REQUIRED",
+                        "message": "Admin privileges required",
+                        "msg": "ADMIN_PRIVILEGES_REQUIRED",
+                    }
+                ),
+                403,
+            )
 
         return f(*args, **kwargs)
 
@@ -56,40 +74,44 @@ def create_user(data):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Error creating user: {e}")
-        raise RuntimeError("Failed to create user")
+        raise e
 
 
-def update_user(user_id, data):
+def update_user(data):
+    user_id = data.get("id")
+    if not user_id:
+        raise ValueError("User ID is required for update")
     user = User.query.get(user_id)
     if not user:
-        return None
+        raise ValueError(f"User with ID {user_id} not found")
 
-    for field in ["official_id", "username", "role", "password"]:
-        if field in data:
-            if field == "password":
-                user.password_hash = generate_password_hash(data[field])
-            else:
-                setattr(user, field, data[field])
+    if "official_id" in data:
+        user.official_id = data["official_id"].strip().lower()
+    if "username" in data:
+        user.username = data["username"].strip().lower()
+    if "role" in data:
+        user.role = data["role"].strip().lower()
+    if "password" in data:
+        user.password_hash = generate_password_hash(data["password"].strip())
 
     try:
         db.session.commit()
-        return user
+        return user.to_dict()
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Error updating user {user_id}: {e}")
-        raise RuntimeError("Failed to update user")
+        current_app.logger.error(f"Error updating user: {e}")
+        raise e
 
 
 def delete_user(user_id):
-    # TODO : Add recovery mechanism
     user = User.query.get(user_id)
     if not user:
-        return None
+        return False
     try:
         db.session.delete(user)
         db.session.commit()
         return True
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Error deleting user {user_id}: {e}")
-        raise RuntimeError("Failed to delete user")
+        current_app.logger.error(f"Error deleting user: {e}")
+        return False

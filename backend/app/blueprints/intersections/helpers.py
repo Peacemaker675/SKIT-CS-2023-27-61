@@ -8,15 +8,15 @@ def traffic_point_to_influx(point: TrafficPoint) -> Point:
 
     # Tags
     p.tag("intersection_id", point.intersection_id)
-    p.tag("has_special_event", str(point.has_special_event).lower())
-    if point.weather_condition:
+    p.tag("has_special_event", str(getattr(point, "has_special_event", False)).lower())
+    if getattr(point, "weather_condition", None):
         p.tag("weather_condition", point.weather_condition)
     # Fields
-    p.field("vehicle_count", point.vehicle_count)
-    p.field("avg_speed", point.avg_speed)
-    p.field("lane_occupancy", point.lane_occupancy)
-    p.field("signal_state", point.signal_state)
-    p.field("max_queue_length", point.max_queue_length)
+    p.field("vehicle_count", int(getattr(point, "vehicle_count", 0)))
+    p.field("avg_speed", float(getattr(point, "avg_speed", 0.0)))
+    p.field("lane_occupancy", float(getattr(point, "lane_occupancy", 0.0)))
+    p.field("signal_state", str(getattr(point, "signal_state", "UNKNOWN")))
+    p.field("max_queue_length", int(getattr(point, "max_queue_length", 0)))
 
     return p
 

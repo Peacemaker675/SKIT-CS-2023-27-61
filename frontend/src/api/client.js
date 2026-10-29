@@ -8,9 +8,13 @@ export const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 
 export class ApiError extends Error {
   constructor(status, body) {
-    super((body && (body.msg || body.error)) || `HTTP ${status}`);
+    super(
+      (body && (body.code || body.msg || body.error || body.message)) ||
+        `HTTP ${status}`
+    );
     this.status = status;
     this.body = body;
+    this.code = (body && (body.code || body.msg)) || null;
   }
 }
 

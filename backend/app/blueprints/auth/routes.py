@@ -17,13 +17,39 @@ from werkzeug.security import check_password_hash
 
 @auth.route("/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    official_id = data.get("official_id").strip().lower()
-    password = data.get("password").strip()
+    data = request.get_json() or {}
+    raw_official_id = data.get("official_id")
+    raw_password = data.get("password")
+
+    if not raw_official_id or not raw_password:
+        return (
+            jsonify(
+                {
+                    "code": "MISSING_CREDENTIALS",
+                    "message": "Official ID and password are required",
+                    "msg": "MISSING_CREDENTIALS",
+                    "error": "Official ID and password are required",
+                }
+            ),
+            400,
+        )
+
+    official_id = str(raw_official_id).strip().lower()
+    password = str(raw_password).strip()
 
     user = User.query.filter_by(official_id=official_id).first()
     if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({"msg": "INVALID_CREDENTIALS"}), 401
+        return (
+            jsonify(
+                {
+                    "code": "INVALID_CREDENTIALS",
+                    "message": "Invalid official ID or password",
+                    "msg": "INVALID_CREDENTIALS",
+                    "error": "Invalid official ID or password",
+                }
+            ),
+            401,
+        )
 
     claims = {"role": user.role}
     access_token = create_access_token(
@@ -36,6 +62,8 @@ def login():
     response = make_response(
         jsonify(
             {
+                "code": "LOGIN_SUCCESS",
+                "message": "Login successful",
                 "msg": "LOGIN_SUCCESS",
                 "role": user.role,
                 "username": user.username,
@@ -54,7 +82,7 @@ def login():
 @auth.route("/check", methods=["GET"])
 @jwt_required(verify_type=False, locations=["cookies"])
 def check_auth():
-    return jsonify({"authenticated": True}), 200
+    return jsonify({"authenticated": True, "code": "AUTHENTICATED", "message": "Authenticated"}), 200
 
 
 @auth.route("/refresh", methods=["POST"])
@@ -65,7 +93,13 @@ def refresh_token():
         identity=current_user_identity,
         additional_claims={"role": get_jwt().get("role")},
     )
-    response = jsonify({"msg": "TOKEN_REFRESHED"})
+    response = jsonify(
+        {
+            "code": "TOKEN_REFRESHED",
+            "message": "Token refreshed successfully",
+            "msg": "TOKEN_REFRESHED",
+        }
+    )
     set_access_cookies(response, access_token)
     return response
 
@@ -73,8 +107,13 @@ def refresh_token():
 @auth.route("/logout", methods=["POST"])
 @jwt_required(verify_type=False, locations=["cookies"])
 def logout():
-    # TODO : Blacklist the used tokens until expiry
-    response = jsonify({"msg": "LOGOUT_SUCCESS"})
+    response = jsonify(
+        {
+            "code": "LOGOUT_SUCCESS",
+            "message": "Logged out successfully",
+            "msg": "LOGOUT_SUCCESS",
+        }
+    )
     unset_access_cookies(response)
     unset_refresh_cookies(response)
     return response, 200

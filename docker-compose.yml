@@ -117,6 +117,25 @@ services:
       - influx_data:/var/lib/influxdb3
     restart: unless-stopped
 
+  vision:
+    build:
+      context: ./vision
+      dockerfile: dockerfile
+    container_name: vision-service
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MODEL_PATH: /models/yolo11s.pt
+      VIDEO_SOURCE: /data/sample.mp4
+      INTERSECTION_ID: INT_001
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./vision/models:/models
+      - ./vision/data:/data
+      
 volumes:
   postgres_data:
   redis_data:

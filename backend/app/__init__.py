@@ -48,7 +48,12 @@ def create_app():
 
     register_cli(app)
 
-    socketio.start_background_task(coordination_listener, app)
+    # Don't start background listener during CLI subcommands (e.g. create-user, set-password)
+    import sys
+
+    is_cli_cmd = any(cmd in sys.argv for cmd in ["create-user", "set-password", "db"])
+    if not is_cli_cmd:
+        socketio.start_background_task(coordination_listener, app)
 
     return app
 
@@ -72,6 +77,26 @@ def register_cli(app):
             }
         )
         click.echo(f"Created user {user.to_dict()}")
+
+    @app.cli.command("set-password")
+    @click.argument("official_id")
+    @click.argument("password")
+    def set_password_command(official_id, password):
+        """Set or reset password directly: flask set-password A001 123"""
+        from app.models.user import User
+        from werkzeug.security import generate_password_hash
+
+        target = official_id.strip().lower()
+        user = User.query.filter(
+            (User.official_id == target) | (User.username == target)
+        ).first()
+        if not user:
+            click.echo(f"User '{official_id}' not found.")
+            return
+
+        user.password_hash = generate_password_hash(password.strip())
+        db.session.commit()
+        click.echo(f"Password updated for {user.official_id} ({user.username}).")
 
 
 if __name__ == "__main__":

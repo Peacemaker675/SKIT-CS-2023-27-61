@@ -34,10 +34,13 @@ def login():
             400,
         )
 
-    official_id = str(raw_official_id).strip().lower()
+    identifier = str(raw_official_id).strip().lower()
     password = str(raw_password).strip()
 
-    user = User.query.filter_by(official_id=official_id).first()
+    # Allow login with either official_id (e.g. A001) or username (e.g. tushar)
+    user = User.query.filter(
+        (User.official_id == identifier) | (User.username == identifier)
+    ).first()
     if not user or not check_password_hash(user.password_hash, password):
         return (
             jsonify(

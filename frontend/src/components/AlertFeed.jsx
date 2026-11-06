@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { staleAlerts, transitionAlerts } from "../lib/alerts.js";
+import { dedupeAlerts, staleAlerts, transitionAlerts } from "../lib/alerts.js";
 import { useT } from "../i18n/i18n.js";
 
 export const MAX_ALERTS = 20;
@@ -19,11 +19,19 @@ export default function AlertFeed({ intersections, liveData }) {
   const [alerts, setAlerts] = useState([]);
   const prev = useRef({});
   const stale = useRef(new Set());
+  const seen = useRef(new Map());
 
   const add = (fresh) => {
-    if (fresh.length) {
-      setAlerts((list) => [...fresh.reverse(), ...list].slice(0, MAX_ALERTS));
+    const result = dedupeAlerts(fresh, seen.current);
+    seen.current = result.seen;
+    const newest = result.alerts.reverse();
+    if (newest.length) {
+      setAlerts((list) => [...newest, ...list].slice(0, MAX_ALERTS));
     }
+  };
+
+  const dismiss = (key) => {
+    setAlerts((list) => list.filter((a) => a.key !== key));
   };
 
   // Compare each changed intersection with what it was last time.
@@ -54,7 +62,18 @@ export default function AlertFeed({ intersections, liveData }) {
 
   return (
     <section className="panel alert-feed" aria-live="polite">
-      <h2>{t("alerts.title")}</h2>
+      <div className="alert-feed-header">
+        <h2>{t("alerts.title")}</h2>
+        {alerts.length > 0 && (
+          <button
+            type="button"
+            className="alert-clear"
+            onClick={() => setAlerts([])}
+          >
+            {t("alerts.clearAll")}
+          </button>
+        )}
+      </div>
       {alerts.length === 0 ? (
         <p className="muted">{t("alerts.empty")}</p>
       ) : (
@@ -69,6 +88,15 @@ export default function AlertFeed({ intersections, liveData }) {
                 {names[a.intersectionId] || a.intersectionId}:{" "}
                 {t(`alerts.messages.${a.type}`)}
               </span>
+              <button
+                type="button"
+                className="alert-dismiss"
+                aria-label={t("alerts.dismiss")}
+                title={t("alerts.dismiss")}
+                onClick={() => dismiss(a.key)}
+              >
+                ×
+              </button>
             </li>
           ))}
         </ol>

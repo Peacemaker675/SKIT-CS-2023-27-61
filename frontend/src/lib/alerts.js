@@ -21,6 +21,24 @@ function alert(type, intersectionId, message, time) {
   return { key: `${time}-${seq}`, type, intersectionId, message, time };
 }
 
+// Same alert (type + intersection) inside this window is shown only once.
+export const DEDUPE_MS = 60000;
+
+// Drops repeats from `fresh`. `seen` maps each alert to when it was last
+// shown; returns the new map too. It is kept apart from the visible list so
+// dismissing an alert doesn't let its repeat straight back in.
+export function dedupeAlerts(fresh, seen) {
+  const alerts = [];
+  const nextSeen = new Map(seen);
+  for (const a of fresh) {
+    const id = `${a.type}:${a.intersectionId}`;
+    if (a.time - (nextSeen.get(id) ?? -Infinity) < DEDUPE_MS) continue;
+    nextSeen.set(id, a.time);
+    alerts.push(a);
+  }
+  return { alerts, seen: nextSeen };
+}
+
 // The signal is under manual control. No field for this is agreed yet, so
 // accept a `control_mode` of "manual" or a phase / signal state naming it.
 export function isManual(data) {

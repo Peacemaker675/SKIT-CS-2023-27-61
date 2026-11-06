@@ -143,6 +143,8 @@
   "alerts": {
     "title": "Alerts",
     "empty": "No alerts yet.",
+    "clearAll": "Clear all",
+    "dismiss": "Dismiss alert",
     "types": {
       "heavy": "Heavy congestion",
       "stale": "Feed stale",

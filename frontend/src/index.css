@@ -812,6 +812,27 @@ button.primary-gradient:hover:not(:disabled) {
   margin-top: 16px;
 }
 
+.alert-feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.alert-clear {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.alert-clear:hover {
+  color: var(--text);
+}
+
 .alert-feed ol {
   margin: 12px 0 0;
   padding: 0;
@@ -849,6 +870,21 @@ button.primary-gradient:hover:not(:disabled) {
 
 .alert-type {
   font-weight: 600;
+}
+
+.alert-dismiss {
+  margin-left: auto;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.alert-dismiss:hover {
+  color: var(--text);
 }
 
 /* ---- Live tab side column: detail panel + congestion list ---- */

@@ -1,10 +1,46 @@
 import { describe, it, expect } from "vitest";
-import { isManual, staleAlerts, transitionAlerts } from "./alerts.js";
+import {
+  dedupeAlerts,
+  isManual,
+  staleAlerts,
+  transitionAlerts,
+} from "./alerts.js";
 
 const NOW = Date.parse("2026-11-04T10:00:00Z");
 const smooth = { max_queue_length: 2, lane_occupancy: 0.1 };
 const heavy = { max_queue_length: 40, lane_occupancy: 0.9 };
 const types = (alerts) => alerts.map((a) => a.type);
+
+describe("dedupeAlerts", () => {
+  const raised = (type, id, time) => ({ type, intersectionId: id, time });
+
+  it("drops the same alert within 60s", () => {
+    const first = dedupeAlerts([raised("heavy", "A", NOW)], new Map());
+    expect(first.alerts).toHaveLength(1);
+    const repeat = [raised("heavy", "A", NOW + 59_000)];
+    expect(dedupeAlerts(repeat, first.seen).alerts).toEqual([]);
+  });
+
+  it("shows it again once 60s have passed", () => {
+    const first = dedupeAlerts([raised("heavy", "A", NOW)], new Map());
+    const later = [raised("heavy", "A", NOW + 60_000)];
+    expect(dedupeAlerts(later, first.seen).alerts).toHaveLength(1);
+  });
+
+  it("keeps other types and other intersections", () => {
+    const fresh = [
+      raised("heavy", "A", NOW),
+      raised("event", "A", NOW),
+      raised("heavy", "B", NOW),
+    ];
+    expect(dedupeAlerts(fresh, new Map()).alerts).toHaveLength(3);
+  });
+
+  it("drops repeats inside one batch", () => {
+    const fresh = [raised("heavy", "A", NOW), raised("heavy", "A", NOW)];
+    expect(dedupeAlerts(fresh, new Map()).alerts).toHaveLength(1);
+  });
+});
 
 describe("transitionAlerts", () => {
   it("fires when congestion turns heavy, not while it stays heavy", () => {

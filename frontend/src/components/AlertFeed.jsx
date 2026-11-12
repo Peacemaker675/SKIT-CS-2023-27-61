@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { dedupeAlerts, staleAlerts, transitionAlerts } from "../lib/alerts.js";
+import {
+  dedupeAlerts,
+  serverAlert,
+  staleAlerts,
+  transitionAlerts,
+} from "../lib/alerts.js";
+import { subscribeToServerAlerts } from "../realtime/alerts.js";
 import { useT } from "../i18n/i18n.js";
 
 export const MAX_ALERTS = 20;
@@ -56,6 +62,15 @@ export default function AlertFeed({ intersections, liveData }) {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(
+    () =>
+      subscribeToServerAlerts((msg) => {
+        const pushed = serverAlert(msg);
+        if (pushed) add([pushed]);
+      }),
+    [],
+  );
+
   const names = Object.fromEntries(
     intersections.map((i) => [i.id, i.name || i.id]),
   );
@@ -85,8 +100,11 @@ export default function AlertFeed({ intersections, liveData }) {
               </time>
               <span className="alert-type">{t(`alerts.types.${a.type}`)}</span>
               <span className="alert-text">
-                {names[a.intersectionId] || a.intersectionId}:{" "}
-                {t(`alerts.messages.${a.type}`)}
+                {a.intersectionId &&
+                  `${names[a.intersectionId] || a.intersectionId}: `}
+                {a.type === "server"
+                  ? a.message
+                  : t(`alerts.messages.${a.type}`)}
               </span>
               <button
                 type="button"

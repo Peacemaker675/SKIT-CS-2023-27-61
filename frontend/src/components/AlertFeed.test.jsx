@@ -1,7 +1,18 @@
 // @vitest-environment jsdom
-import { afterEach, describe, it, expect } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, it, expect, vi } from "vitest";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import AlertFeed from "./AlertFeed.jsx";
+import { subscribeToServerAlerts } from "../realtime/alerts.js";
+
+vi.mock("../realtime/alerts.js", () => ({
+  subscribeToServerAlerts: vi.fn(() => () => {}),
+}));
 
 const intersections = [
   { id: "A", name: "Alpha" },
@@ -34,6 +45,14 @@ describe("AlertFeed", () => {
     update({ A: { ...smooth }, B: { ...heavy } });
     update({ A: { ...heavy }, B: { ...heavy } });
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("shows a server alert with its text and a server tag", () => {
+    render(<AlertFeed intersections={intersections} liveData={{}} />);
+    const push = subscribeToServerAlerts.mock.calls.at(-1)[0];
+    act(() => push({ message: "Agent offline", intersection_id: "A" }));
+    expect(screen.getByText("Server")).toBeTruthy();
+    expect(screen.getByText("Alpha: Agent offline")).toBeTruthy();
   });
 
   it("dismisses one alert", () => {

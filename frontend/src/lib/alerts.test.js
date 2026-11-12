@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   dedupeAlerts,
   isManual,
+  serverAlert,
   staleAlerts,
   transitionAlerts,
 } from "./alerts.js";
@@ -39,6 +40,36 @@ describe("dedupeAlerts", () => {
   it("drops repeats inside one batch", () => {
     const fresh = [raised("heavy", "A", NOW), raised("heavy", "A", NOW)];
     expect(dedupeAlerts(fresh, new Map()).alerts).toHaveLength(1);
+  });
+});
+
+describe("serverAlert", () => {
+  it("keeps the text, intersection and server time", () => {
+    const a = serverAlert(
+      { message: "Agent offline", intersection_id: "A", timestamp: NOW - 5 },
+      NOW,
+    );
+    expect(a).toMatchObject({
+      type: "server",
+      intersectionId: "A",
+      message: "Agent offline",
+      time: NOW - 5,
+    });
+  });
+
+  it("uses the current time when none is sent", () => {
+    expect(serverAlert({ message: "Note" }, NOW).time).toBe(NOW);
+  });
+
+  it("ignores payloads without text", () => {
+    expect(serverAlert({ intersection_id: "A" }, NOW)).toBeNull();
+    expect(serverAlert(null, NOW)).toBeNull();
+  });
+
+  it("isn't dropped as a repeat of different text", () => {
+    const fresh = [serverAlert({ message: "One" }, NOW)];
+    fresh.push(serverAlert({ message: "Two" }, NOW));
+    expect(dedupeAlerts(fresh, new Map()).alerts).toHaveLength(2);
   });
 });
 

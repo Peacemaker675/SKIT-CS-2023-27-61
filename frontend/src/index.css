@@ -859,7 +859,8 @@ button.primary-gradient:hover:not(:disabled) {
   border-left-color: var(--accent);
 }
 
-.alert-event {
+.alert-event,
+.alert-server {
   border-left-color: var(--primary);
 }
 

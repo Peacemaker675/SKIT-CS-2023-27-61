@@ -20,7 +20,7 @@ let socket = null;
 const roomCounts = new Map();
 const listeners = new Set();
 
-function getSocket() {
+export function getSocket() {
   if (socket) return socket;
   socket = io({ path: "/socket.io", withCredentials: true });
 

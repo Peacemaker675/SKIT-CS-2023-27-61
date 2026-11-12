@@ -16,6 +16,9 @@
   --badge-operator: #92400e;
   --badge-analyst: #be185d;
   --error: #dc2626;
+  --signal-go: #009e73;
+  --signal-stop: #d55e00;
+  --on-signal: #111827;
   --gradient: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
   --ring: rgba(124, 58, 237, 0.35);
   --shadow: 0 1px 2px rgba(18, 18, 26, 0.06), 0 8px 24px rgba(18, 18, 26, 0.06);
@@ -708,10 +711,16 @@ button.primary-gradient:hover:not(:disabled) {
 }
 
 .leaflet-bar a,
-.leaflet-bar a:hover {
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
   background: var(--surface);
   color: var(--text);
   border-bottom-color: var(--border);
+}
+
+.leaflet-bar a.leaflet-disabled {
+  background: var(--surface-2);
+  color: var(--muted);
 }
 
 .leaflet-control-attribution.leaflet-control {
@@ -827,7 +836,8 @@ button.primary-gradient:hover:not(:disabled) {
   cursor: pointer;
 }
 
-.alert-clear:hover {
+.alert-clear:hover:not(:disabled) {
+  background: transparent;
   color: var(--text);
 }
 
@@ -849,7 +859,7 @@ button.primary-gradient:hover:not(:disabled) {
 }
 
 .alert-heavy {
-  border-left-color: #d32f2f;
+  border-left-color: var(--signal-stop);
 }
 
 .alert-stale,
@@ -882,7 +892,8 @@ button.primary-gradient:hover:not(:disabled) {
   cursor: pointer;
 }
 
-.alert-dismiss:hover {
+.alert-dismiss:hover:not(:disabled) {
+  background: transparent;
   color: var(--text);
 }
 
@@ -945,19 +956,25 @@ button.primary-gradient:hover:not(:disabled) {
   height: 16px;
   border-radius: 50%;
   flex-shrink: 0;
-  color: #111827;
+  color: var(--on-signal);
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
 }
 
 .congestion-badge {
-  color: #111827;
+  color: var(--on-signal);
 }
 
 .map-marker-icon {
   background: none;
   border: 0;
+  border-radius: 50%;
+}
+
+.map-marker-icon:focus-visible {
+  outline: 3px solid var(--primary-hover);
+  outline-offset: 2px;
 }
 
 .map-marker {
@@ -970,14 +987,14 @@ button.primary-gradient:hover:not(:disabled) {
   border: 2px solid #ffffff;
   border-radius: 50%;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-  color: #111827;
+  color: var(--on-signal);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
 }
 
 .map-marker.selected {
-  border: 3px solid #111827;
+  border: 3px solid var(--on-signal);
   font-size: 14px;
 }
 
@@ -1039,8 +1056,8 @@ button.primary-gradient:hover:not(:disabled) {
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: #2e9e44;
-  box-shadow: 0 0 0 3px rgba(46, 158, 68, 0.2);
+  background: var(--signal-go);
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 .phase-unknown .phase-dot {

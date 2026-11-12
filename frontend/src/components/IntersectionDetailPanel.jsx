@@ -57,7 +57,7 @@ export default function IntersectionDetailPanel({
     );
   }
 
-  const { label, color } = CONGESTION[congestionLevel(data)];
+  const { label, color, symbol } = CONGESTION[congestionLevel(data)];
   const state = normalizeState(data);
 
   return (
@@ -66,8 +66,8 @@ export default function IntersectionDetailPanel({
       <h2>{intersection.name || intersection.id}</h2>
       <p className="muted">
         {intersection.id}
-        <span className="badge" style={{ background: color }}>
-          {label}
+        <span className="badge congestion-badge" style={{ background: color }}>
+          <span aria-hidden="true">{symbol}</span> {label}
         </span>
       </p>
       {data ? (

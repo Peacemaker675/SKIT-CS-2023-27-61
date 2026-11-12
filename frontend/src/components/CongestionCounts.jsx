@@ -1,5 +1,6 @@
-import { CONGESTION, congestionLevel } from "../lib/congestion.js";
+import { congestionLevel } from "../lib/congestion.js";
 import { useT } from "../i18n/i18n.js";
+import CongestionMark from "./CongestionMark.jsx";
 
 const ORDER = ["smooth", "moderate", "heavy", "unknown"];
 
@@ -19,11 +20,7 @@ export default function CongestionCounts({ intersections, liveData }) {
     <ul className="congestion-counts" aria-label={t("congestion.countsLabel")}>
       {ORDER.map((level) => (
         <li key={level}>
-          <span
-            className="congestion-dot"
-            style={{ background: CONGESTION[level].color }}
-            aria-hidden="true"
-          />
+          <CongestionMark level={level} />
           <strong>{counts[level]}</strong> {t(`congestion.${level}`)}
         </li>
       ))}

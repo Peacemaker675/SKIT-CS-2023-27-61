@@ -1,13 +1,37 @@
 import { useEffect } from "react";
+import L from "leaflet";
 import {
-  CircleMarker,
   MapContainer,
+  Marker,
   TileLayer,
   Tooltip,
   useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { CONGESTION, congestionLevel } from "../lib/congestion.js";
+import CongestionMark from "./CongestionMark.jsx";
+
+// One icon per level, reused between updates so a marker keeps its element
+// (and keyboard focus) while the live data changes.
+const icons = new Map();
+
+function markerIcon(level, selected) {
+  const key = `${level}-${selected}`;
+  if (!icons.has(key)) {
+    const { color, symbol } = CONGESTION[level];
+    const size = selected ? 32 : 24;
+    const cls = selected ? "map-marker selected" : "map-marker";
+    icons.set(
+      key,
+      L.divIcon({
+        className: "map-marker-icon",
+        html: `<span class="${cls}" style="background:${color}">${symbol}</span>`,
+        iconSize: [size, size],
+      }),
+    );
+  }
+  return icons.get(key);
+}
 
 // Zooms the map so every intersection is visible.
 function FitToIntersections({ intersections }) {
@@ -23,7 +47,7 @@ function FitToIntersections({ intersections }) {
 }
 
 // SRS Tab 1, Component 1: every managed intersection as a clickable icon,
-// coloured by its current congestion level.
+// showing its current congestion level by colour and symbol.
 export default function IntersectionMap({
   intersections,
   liveData,
@@ -39,33 +63,24 @@ export default function IntersectionMap({
         />
         <FitToIntersections intersections={intersections} />
         {intersections.map((i) => {
-          const { color, label } =
-            CONGESTION[congestionLevel(liveData[i.id])];
-          const selected = i.id === selectedId;
+          const level = congestionLevel(liveData[i.id]);
+          const name = `${i.name || i.id} · ${CONGESTION[level].label}`;
           return (
-            <CircleMarker
+            <Marker
               key={i.id}
-              center={[i.lat, i.lng]}
-              radius={selected ? 14 : 10}
-              pathOptions={{
-                color: selected ? "#1c2430" : "#ffffff",
-                weight: selected ? 3 : 2,
-                fillColor: color,
-                fillOpacity: 0.9,
-              }}
+              position={[i.lat, i.lng]}
+              icon={markerIcon(level, i.id === selectedId)}
               eventHandlers={{ click: () => onSelect(i.id) }}
             >
-              <Tooltip>
-                {i.name || i.id} · {label}
-              </Tooltip>
-            </CircleMarker>
+              <Tooltip>{name}</Tooltip>
+            </Marker>
           );
         })}
       </MapContainer>
       <ul className="legend">
-        {Object.entries(CONGESTION).map(([key, { label, color }]) => (
+        {Object.entries(CONGESTION).map(([key, { label }]) => (
           <li key={key}>
-            <span className="dot" style={{ background: color }} />
+            <CongestionMark level={key} />
             {label}
           </li>
         ))}

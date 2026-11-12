@@ -2,6 +2,8 @@
   "common": {
     "loading": "लोड हो रहा है…",
     "checkingSession": "सत्र की जाँच हो रही है…",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
     "logout": "लॉग आउट",
     "comingSoon": "जल्द आ रहा है",
     "switchLanguage": "Switch to English",

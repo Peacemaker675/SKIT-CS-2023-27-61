@@ -10,7 +10,7 @@ export class ApiError extends Error {
   constructor(status, body) {
     super(
       (body && (body.code || body.msg || body.error || body.message)) ||
-        `HTTP ${status}`
+        `HTTP ${status}`,
     );
     this.status = status;
     this.body = body;
@@ -64,6 +64,9 @@ export async function apiRequest(path, options) {
   return rawRequest(path, options);
 }
 
+// The backend has no override route yet (or this intersection has none).
+export class OverrideUnavailable extends Error {}
+
 export const authApi = {
   login: (official_id, password) =>
     rawRequest("/auth/login", {
@@ -101,6 +104,25 @@ export const intersectionsApi = {
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
         return {};
+      }
+      throw err;
+    }
+  },
+};
+
+// SRS manual override. ASSUMPTION: the body is { action } until the backend
+// route exists (Dependencies V6).
+export const overrideApi = {
+  send: async (id, action) => {
+    try {
+      await apiRequest(`/intersections/${encodeURIComponent(id)}/override`, {
+        method: "POST",
+        body: { action },
+      });
+      return { ok: true };
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        throw new OverrideUnavailable();
       }
       throw err;
     }

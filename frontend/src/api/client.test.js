@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { intersectionsApi } from "./client.js";
+import {
+  ApiError,
+  OverrideUnavailable,
+  intersectionsApi,
+  overrideApi,
+} from "./client.js";
 
 function mockFetch(status, body) {
   return vi.fn().mockResolvedValue({
@@ -12,6 +17,34 @@ function mockFetch(status, body) {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+describe("overrideApi.send", () => {
+  it("posts the action and returns ok", async () => {
+    const fetchMock = mockFetch(200, {});
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(overrideApi.send("A 1", "ALL_RED")).resolves.toEqual({
+      ok: true,
+    });
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(url).toBe("/api/intersections/A%201/override");
+    expect(options.method).toBe("POST");
+    expect(JSON.parse(options.body)).toEqual({ action: "ALL_RED" });
+  });
+
+  it("maps 404 to OverrideUnavailable", async () => {
+    vi.stubGlobal("fetch", mockFetch(404, {}));
+    await expect(overrideApi.send("A", "ALL_RED")).rejects.toBeInstanceOf(
+      OverrideUnavailable,
+    );
+  });
+
+  it("throws ApiError for other failures", async () => {
+    vi.stubGlobal("fetch", mockFetch(500, {}));
+    await expect(overrideApi.send("A", "ALL_RED")).rejects.toBeInstanceOf(
+      ApiError,
+    );
+  });
 });
 
 describe("intersectionsApi.latest", () => {

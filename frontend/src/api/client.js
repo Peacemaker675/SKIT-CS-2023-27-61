@@ -3,6 +3,7 @@
 // credentials; JS never sees the token itself.
 
 import mockIntersections from "../mocks/intersections.json";
+import { mockEmergencies } from "../mocks/emergencies.js";
 
 export const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 
@@ -105,4 +106,62 @@ export const intersectionsApi = {
       throw err;
     }
   },
+};
+
+// True when the backend doesn't serve the route at all: Flask's default 404
+// page is HTML, so there is no JSON error code. A 404 *with* a code (e.g.
+// EMERGENCY_NOT_FOUND) is a real answer and must not fall back to the mock.
+function routeMissing(err) {
+  return err instanceof ApiError && err.status === 404 && !err.code;
+}
+
+// Call the API; if the route doesn't exist yet, run the mock instead and
+// turn its errors into ApiErrors so callers handle both the same way.
+async function withMockFallback(request, mock) {
+  try {
+    return await request();
+  } catch (err) {
+    if (!routeMissing(err)) throw err;
+  }
+  try {
+    return mock();
+  } catch (err) {
+    throw new ApiError(err.status || 400, { code: err.code || err.message });
+  }
+}
+
+// Emergency green corridor (shared/schemas/emergency.schema.json). All three
+// endpoints are proposed, not in the SRS; until the backend has them the
+// in-memory mocks/emergencies.js answers instead.
+export const emergenciesApi = {
+  // body: { vehicle_type, start_id, end_id } -> the new emergency.
+  start: (body) =>
+    withMockFallback(
+      () => apiRequest("/emergencies", { method: "POST", body }),
+      () => mockEmergencies.start(body),
+    ),
+  // Active emergencies, oldest first.
+  list: () =>
+    withMockFallback(
+      () => apiRequest("/emergencies/active"),
+      () => mockEmergencies.list(),
+    ),
+  // Mark an emergency as cleared -> the updated emergency.
+  clear: (id) =>
+    withMockFallback(
+      () =>
+        apiRequest(`/emergencies/${encodeURIComponent(id)}/clear`, {
+          method: "POST",
+        }),
+      () => mockEmergencies.clear(id),
+    ),
+  // Stop an emergency early (operator decision) -> the updated emergency.
+  cancel: (id) =>
+    withMockFallback(
+      () =>
+        apiRequest(`/emergencies/${encodeURIComponent(id)}/cancel`, {
+          method: "POST",
+        }),
+      () => mockEmergencies.cancel(id),
+    ),
 };

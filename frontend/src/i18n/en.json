@@ -155,5 +155,61 @@
       "event": "Special event reported",
       "manual": "Signal switched to manual"
     }
+  },
+  "emergency": {
+    "start": "Start emergency",
+    "formTitle": "Start emergency corridor",
+    "formText": "Choose where the vehicle enters and leaves. Every intersection on the route gets green in turn.",
+    "vehicleType": "Vehicle type",
+    "from": "From",
+    "to": "To",
+    "choose": "Select…",
+    "vehicles": {
+      "ambulance": "Ambulance",
+      "fire": "Fire engine",
+      "police": "Police"
+    },
+    "routePreview": "Route",
+    "stops": "{n} intersections",
+    "distance": "about {km} km",
+    "submit": "Start corridor",
+    "starting": "Starting…",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirmTitle": "Start emergency corridor?",
+    "confirmText": "Start {vehicle} corridor from {from} to {to}? Signals on {n} intersections will be overridden.",
+    "confirm": "Yes, start",
+    "errors": {
+      "required": "This field is required.",
+      "same": "Start and end must be different intersections.",
+      "noRoute": "No route connects these intersections.",
+      "failed": "Could not start the emergency: {reason}"
+    },
+    "panelTitle": "Active emergencies",
+    "none": "No active emergencies",
+    "loadFailed": "Could not load emergencies: {reason}",
+    "legend": "Emergency corridor",
+    "vehicleLabel": "{vehicle} {id}",
+    "startedAt": "Started {time}",
+    "status": {
+      "passed": "Passed",
+      "green": "Green",
+      "pending": "Waiting"
+    },
+    "corridorLabel": "Corridor for {id}",
+    "showOnMap": "Show {vehicle} {id} on the map",
+    "clear": "Clear",
+    "clearLabel": "Clear {vehicle} {id} (vehicle arrived)",
+    "cancelRun": "Cancel",
+    "cancelLabel": "Cancel {vehicle} {id}",
+    "clearTitle": "Clear emergency?",
+    "clearText": "Mark {vehicle} {id} as arrived and give the signals back to normal control?",
+    "clearConfirm": "Yes, clear",
+    "cancelTitle": "Cancel emergency?",
+    "cancelText": "Stop the {vehicle} corridor {id} before it reaches {to}? Signals go back to normal control.",
+    "cancelConfirm": "Yes, cancel it",
+    "keep": "Keep running",
+    "working": "Working…",
+    "actionFailed": "Could not update {id}: {reason}"
   }
 }

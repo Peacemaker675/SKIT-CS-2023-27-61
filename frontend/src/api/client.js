@@ -81,7 +81,11 @@ export const intersectionsApi = {
   // it yet; use placeholder intersections only while the route is missing.
   list: async () => {
     try {
-      return await apiRequest("/admin/intersections");
+      const data = await apiRequest("/admin/intersections");
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+      return mockIntersections;
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
         return mockIntersections;

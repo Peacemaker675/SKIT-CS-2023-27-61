@@ -12,6 +12,11 @@ INFERENCE_COOLDOWN_SECONDS = 3.0
 def load_topology():
     candidates = [
         os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "configs/topology.json")
+        ),
+        "/app/app/configs/topology.json",
+        "/app/shared/configs/topology.json",
+        os.path.abspath(
             os.path.join(os.path.dirname(__file__), "../../shared/configs/topology.json")
         ),
         os.path.abspath(

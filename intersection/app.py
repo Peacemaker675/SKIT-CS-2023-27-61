@@ -34,6 +34,9 @@ def get_redis_client():
 def load_intersection_ids():
     """Loads intersection IDs from shared config or falls back to standard IDs."""
     candidates = [
+        os.path.join(os.path.dirname(__file__), "configs/intersections.json"),
+        "/app/configs/intersections.json",
+        "/app/shared/configs/intersections.json",
         os.path.join(os.path.dirname(__file__), "../shared/configs/intersections.json"),
         os.path.join(os.getcwd(), "shared/configs/intersections.json"),
     ]

@@ -20,22 +20,28 @@ class TestRLService(unittest.TestCase):
         self.model = TrafficRLModel()
 
     def test_prediction_output(self):
-        # 10-dim state vector
-        sample_state = [10.0, 20.0, 5.0, 15.0, 25.0, 30.0, 8.0, 12.0, 18.0, 22.0]
+        # 4-dim state vector [North, East, South, West]
+        sample_state = [10.0, 5.0, 25.0, 8.0]
         action = self.model.predict(sample_state)
         self.assertIn(action, [0, 1, 2, 3])
         phase = ACTION_TO_PHASE[action]
         self.assertIn(phase, ["N_GREEN", "E_GREEN", "S_GREEN", "W_GREEN"])
 
+    def test_prediction_dict_input(self):
+        # Dictionary input by lane name
+        sample_dict = {"N": 10, "E": 5, "S": 35, "W": 8}
+        action = self.model.predict(sample_dict)
+        self.assertIn(action, [0, 1, 2, 3])
+
     def test_state_padding(self):
-        # Short state vector (< 10)
+        # Short state vector (< 4)
         short_state = [15.0, 30.0]
         action = self.model.predict(short_state)
         self.assertIn(action, [0, 1, 2, 3])
 
     def test_state_clipping(self):
-        # Values exceeding 50.0 should be bounded
-        large_state = [100.0] * 10
+        # Values exceeding 60.0 should be bounded
+        large_state = [100.0] * 4
         action = self.model.predict(large_state)
         self.assertIn(action, [0, 1, 2, 3])
 

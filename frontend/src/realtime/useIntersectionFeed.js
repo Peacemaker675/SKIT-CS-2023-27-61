@@ -27,7 +27,10 @@ export function useIntersectionFeed(ids) {
       })
       .catch(() => {});
     const unsubscribe = subscribe(key.split(","), (id, data) => {
-      setLatest((prev) => ({ ...prev, [id]: data }));
+      setLatest((prev) => ({
+        ...prev,
+        [id]: { ...(prev[id] || {}), ...data },
+      }));
     });
     return () => {
       active = false;

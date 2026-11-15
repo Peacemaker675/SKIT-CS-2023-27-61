@@ -51,6 +51,8 @@ services:
     ports:
       - "127.0.0.1:5001:5001"
     volumes:
+      - ./rl_agent/src:/app/src
+      - ./rl_agent/models:/app/models
       - ./shared:/app/shared:ro
     depends_on:
       redis:
@@ -71,6 +73,7 @@ services:
     ports:
       - "127.0.0.1:5002:5002"
     volumes:
+      - ./intersection/app.py:/app/app.py
       - ./shared:/app/shared:ro
     depends_on:
       redis:

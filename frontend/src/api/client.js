@@ -18,11 +18,29 @@ export class ApiError extends Error {
   }
 }
 
+function getCookie(name) {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 async function rawRequest(path, { method = "GET", body } = {}) {
+  const headers = body !== undefined ? { "Content-Type": "application/json" } : {};
+  const upperMethod = method.toUpperCase();
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(upperMethod)) {
+    const isRefresh = path.includes("/auth/refresh");
+    const csrfToken = isRefresh
+      ? getCookie("csrf_refresh_token") || getCookie("csrf_access_token")
+      : getCookie("csrf_access_token");
+    if (csrfToken) {
+      headers["X-CSRF-TOKEN"] = csrfToken;
+    }
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     method,
     credentials: "include",
-    headers: body !== undefined ? { "Content-Type": "application/json" } : {},
+    headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 

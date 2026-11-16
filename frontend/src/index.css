@@ -1089,7 +1089,6 @@ button.primary-gradient:hover:not(:disabled) {
   font-size: 12px;
 }
 
-<<<<<<< ours
 .lane-table {
   width: 100%;
   margin-top: 16px;
@@ -1115,7 +1114,8 @@ button.primary-gradient:hover:not(:disabled) {
 
 .lane-table tbody th {
   font-weight: 600;
-=======
+}
+
 /* ---- Signal phase indicator ---- */
 .phase-indicator {
   display: flex;
@@ -1151,7 +1151,6 @@ button.primary-gradient:hover:not(:disabled) {
 .phase-timer {
   margin-left: auto;
   font-variant-numeric: tabular-nums;
->>>>>>> theirs
 }
 
 /* ---- Small screens ---- */
@@ -1242,4 +1241,284 @@ button.primary-gradient:hover:not(:disabled) {
   color: var(--primary-text);
   font-weight: 600;
   font-size: 11px;
+}
+
+/* ---- Emergency green corridor ---- */
+:root {
+  --emergency: #2563eb;
+}
+
+.live-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin: 0 0 12px;
+}
+
+.live-toolbar .congestion-counts {
+  margin: 0;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(9, 9, 11, 0.55);
+}
+
+.modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.modal h2 {
+  margin: 0 0 4px;
+  font-size: 1.125rem;
+}
+
+.modal p {
+  margin: 0 0 12px;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.form-field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.form-field select:focus-visible {
+  outline: none;
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.form-field select[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.field-error {
+  margin: 0;
+  color: var(--error);
+  font-size: 0.8rem;
+}
+
+.route-preview {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--emergency);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.route-preview h3 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.route-preview h3 .muted {
+  font-weight: 400;
+}
+
+.route-preview ol {
+  margin: 8px 0 0;
+  padding-left: 22px;
+  font-size: 0.875rem;
+}
+
+/* Full-width row under the map, so the side column keeps its space. */
+.emergency-panel {
+  margin-top: 16px;
+}
+
+.emergency-panel > div > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.emergency-item {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--corridor, var(--emergency));
+  border-radius: 10px;
+}
+
+.emergency-item.selected {
+  background: var(--surface-2);
+}
+
+/* The summary line is a button (selects the corridor) styled as a row. */
+button.emergency-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 2px 8px 2px 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+}
+
+button.emergency-row:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.emergency-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.emergency-route {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.corridor-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.corridor-step {
+  display: inline-flex;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.step-id {
+  font-weight: 600;
+}
+
+/* Status is always written out; colour only reinforces it. */
+.step-passed {
+  color: var(--muted);
+  background: var(--surface-2);
+}
+
+.step-passed .step-id {
+  text-decoration: line-through;
+}
+
+.step-green {
+  border-color: #15803d;
+  background: #15803d;
+  color: #ffffff;
+}
+
+.step-pending {
+  color: var(--text);
+}
+
+.emergency-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+button.small {
+  padding: 4px 12px;
+  font-size: 0.8rem;
+}
+
+.vehicle-chip,
+.vehicle-marker span {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--corridor, var(--emergency));
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Leaflet sets the divIcon size; the letter fills it. */
+.vehicle-marker {
+  background: none;
+  border: none;
+}
+
+.vehicle-marker span {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.vehicle-marker.selected span {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 7px rgba(0, 0, 0, 0.35);
+}
+
+.legend-line {
+  display: inline-block;
+  width: 18px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-top: 3px dashed;
+}
+
+@media (max-width: 600px) {
+  .modal {
+    padding: 18px;
+  }
+
+  .modal-actions button {
+    flex: 1;
+  }
+
+  .live-toolbar > button {
+    width: 100%;
+  }
 }

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "emergency.schema.json",
   "title": "Emergency (green corridor)",
-  "description": "One emergency vehicle run. The operator starts it, the route is computed from intersection neighbours and every intersection on the route is given green in turn. Proposed format - none of this is in the SRS yet. Proposed endpoints: POST /api/emergencies (body: #/$defs/startRequest), GET /api/emergencies/active, POST /api/emergencies/<id>/clear. Proposed Socket.IO events: emergency_update (#/$defs/emergencyUpdate) and emergency_cleared (#/$defs/emergencyCleared).",
+  "description": "One emergency vehicle run. The operator starts it, the route is computed from intersection neighbours and every intersection on the route is given green in turn. Proposed format - none of this is in the SRS yet. Proposed endpoints: POST /api/emergencies (body: #/$defs/startRequest), GET /api/emergencies/active, POST /api/emergencies/<id>/clear, POST /api/emergencies/<id>/cancel. Proposed Socket.IO events: emergency_update (#/$defs/emergencyUpdate) and emergency_cleared (#/$defs/emergencyCleared).",
   "type": "object",
   "required": [
     "id",

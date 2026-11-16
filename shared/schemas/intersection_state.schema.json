@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "intersection_state.schema.json",
   "title": "Intersection state",
-  "description": "Latest state of one intersection. Stored in Redis as intersection:<intersection_id> and sent as the body of POST /api/intersections/<intersection_id>/data (SRS, Redis schema). Per-lane values are keyed by lane id. Proposed format - the backend currently takes a flat payload.",
+  "description": "Latest state of one intersection. Stored in Redis as intersection:<intersection_id> and sent as the body of POST /api/intersections/<intersection_id>/data (SRS, Redis schema). Per-lane values are keyed by lane id (e.g. N, E, S, W). Approved standard format supported across backend, perception, and RL agent services.",
   "type": "object",
   "required": [
     "timestamp",

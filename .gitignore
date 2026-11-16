@@ -47,6 +47,7 @@ runs/
 wandb/
 .tensorboard/
 *.log
+rl_agent/logs/
 
 # Python
 __pycache__/

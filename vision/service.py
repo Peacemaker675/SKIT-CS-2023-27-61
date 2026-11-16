@@ -21,19 +21,19 @@ model = YOLO(MODEL_PATH)
 
 def lane_from_position(x1, y1, x2, y2, frame_w, frame_h):
     """
-    Simple lane assignment based on center of bounding box.
-    If you later have actual lane geometry, replace this with lane-aware logic.
+    Simple lane assignment based on center of bounding box:
+    Quadrants mapped to 4 intersection directions: N, E, S, W.
     """
     cx = (x1 + x2) / 2.0
     cy = (y1 + y2) / 2.0
 
     if cx < frame_w * 0.5:
-        return "west" if cy < frame_h * 0.5 else "south"
-    return "east" if cy < frame_h * 0.5 else "north"
+        return "W" if cy < frame_h * 0.5 else "S"
+    return "E" if cy < frame_h * 0.5 else "N"
 
 
 def build_empty_lane_counts():
-    return {"north": 0, "south": 0, "east": 0, "west": 0}
+    return {"N": 0, "E": 0, "S": 0, "W": 0}
 
 
 def publish_telemetry(frame):
@@ -65,7 +65,20 @@ def publish_telemetry(frame):
         "source": "vision",
     }
 
+    # Store latest state in Redis hash
+    clean_data = {
+        k: (
+            json.dumps(v)
+            if isinstance(v, (dict, list))
+            else ("true" if v is True else "false" if v is False else str(v))
+        )
+        for k, v in payload.items()
+    }
+    r.hset(f"intersection:{INTERSECTION_ID}", mapping=clean_data)
+    r.hset(INTERSECTION_ID, mapping=clean_data)
+
     r.publish("traffic_updates", json.dumps(payload))
+    r.publish(f"intersection:telemetry:{INTERSECTION_ID}", json.dumps(payload))
     print(f"[VISION] {INTERSECTION_ID} -> {payload}")
     return payload
 

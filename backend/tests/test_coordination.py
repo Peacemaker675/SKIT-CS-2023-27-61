@@ -15,6 +15,7 @@ from app.coordination import (
     get_5_intersection_window,
     extract_intersection_features,
     build_5_intersection_state,
+    extract_4_lane_counts,
 )
 from app.influx_models import TrafficPoint
 
@@ -49,6 +50,22 @@ class TestCoordination(unittest.TestCase):
         state = build_5_intersection_state(mock_redis, "INT_001")
         self.assertEqual(len(state), 10)
         self.assertEqual(state, [10.0, 15.0] * 5)
+
+    def test_extract_4_lane_counts_from_payload(self):
+        payload = {
+            "intersection_id": "INT_001",
+            "vehicle_counts": {"N": 12, "E": 6, "S": 22, "W": 9},
+        }
+        obs = extract_4_lane_counts(None, "INT_001", payload_data=payload)
+        self.assertEqual(obs, [12.0, 6.0, 22.0, 9.0])
+
+    def test_extract_4_lane_counts_from_redis(self):
+        mock_redis = MagicMock()
+        mock_redis.hgetall.return_value = {
+            "vehicle_counts": json.dumps({"north": 14, "east": 8, "south": 18, "west": 7}),
+        }
+        obs = extract_4_lane_counts(mock_redis, "INT_001")
+        self.assertEqual(obs, [14.0, 8.0, 18.0, 7.0])
 
     def test_traffic_point_per_lane(self):
         tp = TrafficPoint(

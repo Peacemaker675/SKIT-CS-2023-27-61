@@ -27,6 +27,9 @@ services:
       INFLUX_HOST: http://influxdb:8181
     ports:
       - "5000:5000"
+    volumes:
+      - ./backend/app:/app/app
+      - ./shared:/app/shared:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,6 +50,10 @@ services:
       PORT: "5001"
     ports:
       - "127.0.0.1:5001:5001"
+    volumes:
+      - ./rl_agent/src:/app/src
+      - ./rl_agent/models:/app/models
+      - ./shared:/app/shared:ro
     depends_on:
       redis:
         condition: service_healthy
@@ -65,6 +72,9 @@ services:
       PORT: "5002"
     ports:
       - "127.0.0.1:5002:5002"
+    volumes:
+      - ./intersection/app.py:/app/app.py
+      - ./shared:/app/shared:ro
     depends_on:
       redis:
         condition: service_healthy

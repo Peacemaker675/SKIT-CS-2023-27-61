@@ -1,3 +1,4 @@
+# --- Serving / API ---
 Flask==3.1.0
 flask-socketio==5.3.6
 python-socketio==5.11.4
@@ -7,3 +8,8 @@ numpy>=1.26.0
 python-dotenv>=1.0.0
 gunicorn>=21.0.0
 eventlet>=0.35.0
+
+# --- RL Serving ---
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+stable-baselines3>=2.3.0

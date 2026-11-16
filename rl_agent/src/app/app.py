@@ -52,22 +52,28 @@ class TrafficRLModel:
 
     def predict(self, state):
         """
-        Accepts a 10-dimensional state vector:
-        [count_center, queue_center, count_n, queue_n, count_e, queue_e, count_w, queue_w, count_s, queue_s]
+        Accepts a 4-dimensional state vector (or dict/list):
+        [count_north, count_east, count_south, count_west]
         Returns discrete action (0: N_GREEN, 1: E_GREEN, 2: S_GREEN, 3: W_GREEN).
         """
-        if not isinstance(state, (list, tuple, np.ndarray)):
+        if isinstance(state, dict):
+            # Support both {"N": x, "E": y, "S": z, "W": w} and full lane names
+            n = float(state.get("N", state.get("north", 0.0)))
+            e = float(state.get("E", state.get("east", 0.0)))
+            s = float(state.get("S", state.get("south", 0.0)))
+            w = float(state.get("W", state.get("west", 0.0)))
+            arr = np.array([n, e, s, w], dtype=np.float32)
+        elif isinstance(state, (list, tuple, np.ndarray)):
+            arr = np.array(state, dtype=np.float32).flatten()
+            if len(arr) < 4:
+                arr = np.pad(arr, (0, 4 - len(arr)), "constant")
+            elif len(arr) > 4:
+                arr = arr[:4]
+        else:
             return 0
 
-        arr = np.array(state, dtype=np.float32).flatten()
-        # Ensure 10-dimensional Box observation space
-        if len(arr) < 10:
-            arr = np.pad(arr, (0, 10 - len(arr)), "constant")
-        elif len(arr) > 10:
-            arr = arr[:10]
-
-        # Clip values to [0, 50] matching model observation space bounds
-        arr = np.clip(arr, 0.0, 50.0)
+        # Clip values to [0, 60] matching environment observation space bounds
+        arr = np.clip(arr, 0.0, 60.0)
 
         if self.sb3_model is not None:
             try:
@@ -76,15 +82,9 @@ class TrafficRLModel:
             except Exception as e:
                 print(f"[RL_AGENT] SB3 inference error: {e}. Falling back to heuristic.")
 
-        # Intelligent demand-responsive fallback:
-        # Lanes: N (index 2-3), E (index 4-5), W (index 6-7), S (index 8-9)
-        lane_demands = [
-            arr[3] * 1.5 + arr[2],  # North: queue * 1.5 + vehicle count
-            arr[5] * 1.5 + arr[4],  # East
-            arr[9] * 1.5 + arr[8],  # South
-            arr[7] * 1.5 + arr[6],  # West
-        ]
-        best_action = int(np.argmax(lane_demands))
+        # Heuristic fallback: select lane with maximum vehicle count
+        # 0: North, 1: East, 2: South, 3: West
+        best_action = int(np.argmax(arr))
         return best_action
 
 

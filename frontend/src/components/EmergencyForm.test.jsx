@@ -6,6 +6,7 @@ import {
   fireEvent,
   render,
   screen,
+  within,
 } from "@testing-library/react";
 import EmergencyForm from "./EmergencyForm.jsx";
 import intersections from "../mocks/intersections.json";
@@ -101,7 +102,8 @@ describe("EmergencyForm", () => {
     expect(confirm.textContent).toContain(
       "Start Ambulance corridor from Placeholder Intersection 1 to Placeholder Intersection 7?",
     );
-    expect(document.activeElement).toBe(screen.getByText("Yes, start"));
+    // Varun's ui/ConfirmDialog focuses its safe "Cancel" button first.
+    expect(document.activeElement).toBe(within(confirm).getByText("Cancel"));
 
     await act(async () => fireEvent.click(screen.getByText("Yes, start")));
     expect(onStart).toHaveBeenCalledWith({
@@ -127,12 +129,28 @@ describe("EmergencyForm", () => {
   it("Esc closes only the confirm dialog, then the form", () => {
     const { onClose } = setup();
     fillValid();
-    fireEvent.click(screen.getByText("Start corridor"));
-    fireEvent.keyDown(document, { key: "Escape" });
+    const submit = screen.getByText("Start corridor");
+    submit.focus();
+    fireEvent.click(submit);
+    fireEvent.keyDown(document.activeElement, { key: "Escape" });
     expect(screen.queryByText("Yes, start")).toBeNull();
     expect(onClose).not.toHaveBeenCalled();
-    fireEvent.keyDown(document, { key: "Escape" });
+    expect(document.activeElement).toBe(submit);
+    fireEvent.keyDown(document.activeElement, { key: "Escape" });
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("leaves Tab inside the confirm dialog to that dialog", () => {
+    setup();
+    fillValid();
+    fireEvent.click(screen.getByText("Start corridor"));
+    const confirm = screen.getByRole("dialog", {
+      name: "Start emergency corridor?",
+    });
+    const yes = within(confirm).getByText("Yes, start");
+    yes.focus();
+    fireEvent.keyDown(yes, { key: "Tab" });
+    expect(confirm.contains(document.activeElement)).toBe(true);
   });
 
   it("keeps Tab inside the form", () => {

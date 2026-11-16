@@ -1,0 +1,79 @@
+{
+  "INT_001": {
+    "center": "INT_001",
+    "north": "INT_002",
+    "east": "INT_002",
+    "west": "INT_004",
+    "south": "INT_004"
+  },
+  "INT_002": {
+    "center": "INT_002",
+    "north": "INT_005",
+    "east": "INT_005",
+    "west": "INT_001",
+    "south": "INT_003"
+  },
+  "INT_003": {
+    "center": "INT_003",
+    "north": "INT_005",
+    "east": "INT_005",
+    "west": "INT_004",
+    "south": "INT_004"
+  },
+  "INT_004": {
+    "center": "INT_004",
+    "north": "INT_001",
+    "east": "INT_003",
+    "west": "INT_001",
+    "south": "INT_006"
+  },
+  "INT_005": {
+    "center": "INT_005",
+    "north": "INT_002",
+    "east": "INT_008",
+    "west": "INT_002",
+    "south": "INT_008"
+  },
+  "INT_006": {
+    "center": "INT_006",
+    "north": "INT_004",
+    "east": "INT_007",
+    "west": "INT_009",
+    "south": "INT_009"
+  },
+  "INT_007": {
+    "center": "INT_007",
+    "north": "INT_008",
+    "east": "INT_008",
+    "west": "INT_006",
+    "south": "INT_010"
+  },
+  "INT_008": {
+    "center": "INT_008",
+    "north": "INT_005",
+    "east": "INT_005",
+    "west": "INT_005",
+    "south": "INT_007"
+  },
+  "INT_009": {
+    "center": "INT_009",
+    "north": "INT_006",
+    "east": "INT_010",
+    "west": "INT_010",
+    "south": "INT_010"
+  },
+  "INT_010": {
+    "center": "INT_010",
+    "north": "INT_007",
+    "east": "INT_007",
+    "west": "INT_009",
+    "south": "INT_009"
+  },
+  "INT_011": {
+    "center": "INT_011",
+    "north": "INT_011",
+    "east": "INT_011",
+    "west": "INT_011",
+    "south": "INT_011"
+  }
+}

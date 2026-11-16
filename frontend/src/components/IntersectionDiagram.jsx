@@ -103,7 +103,7 @@ function queueRect(rect, side, share) {
 const MIN_QUEUE_SCALE = 10;
 
 // Same green as the "Smooth" congestion marker (lib/congestion.js).
-const GREEN = "#2e9e44";
+const GREEN = "var(--signal-go)";
 
 export default function IntersectionDiagram({ lanes = [], phase = null }) {
   const { t } = useT();

@@ -123,9 +123,9 @@ describe("EmergencyPanel", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Cancel Fire engine EMG_002" }),
     );
-    const dialog = screen.getByRole("dialog", { name: "Cancel emergency?" });
+    const dialog = screen.getByRole("dialog", { name: "Stop this emergency?" });
     expect(dialog.textContent).toContain("Placeholder Intersection 8");
-    fireEvent.click(screen.getByRole("button", { name: "Keep running" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(onCancel).not.toHaveBeenCalled();
     expect(onClear).not.toHaveBeenCalled();
@@ -137,7 +137,7 @@ describe("EmergencyPanel", () => {
       screen.getByRole("button", { name: "Cancel Fire engine EMG_002" }),
     );
     await act(async () =>
-      fireEvent.click(screen.getByRole("button", { name: "Yes, cancel it" })),
+      fireEvent.click(screen.getByRole("button", { name: "Yes, stop it" })),
     );
     expect(onCancel).toHaveBeenCalledWith("EMG_002");
   });

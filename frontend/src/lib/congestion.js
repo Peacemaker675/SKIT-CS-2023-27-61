@@ -11,11 +11,13 @@ const QUEUE_HEAVY = 25;
 const OCCUPANCY_MODERATE = 0.4;
 const OCCUPANCY_HEAVY = 0.7;
 
+// Colours stay apart under protanopia, deuteranopia and tritanopia, and each
+// level has its own symbol, so colour is never the only signal.
 export const CONGESTION = {
-  smooth: { label: "Smooth", color: "#2e9e44" },
-  moderate: { label: "Moderate", color: "#e0a400" },
-  heavy: { label: "Heavy", color: "#d32f2f" },
-  unknown: { label: "No data", color: "#8a94a3" },
+  smooth: { label: "Smooth", color: "#009e73", symbol: "●" },
+  moderate: { label: "Moderate", color: "#f0c419", symbol: "▲" },
+  heavy: { label: "Heavy", color: "#d55e00", symbol: "■" },
+  unknown: { label: "No data", color: "#a3acb9", symbol: "?" },
 };
 
 const RANK = ["smooth", "moderate", "heavy"];

@@ -48,6 +48,11 @@ describe("congestionLevel", () => {
 });
 
 describe("CONGESTION", () => {
+  it("gives every level its own symbol", () => {
+    const symbols = Object.values(CONGESTION).map((c) => c.symbol);
+    expect(new Set(symbols).size).toBe(Object.keys(CONGESTION).length);
+  });
+
   it("has a label for every level", () => {
     for (const key of ["smooth", "moderate", "heavy", "unknown"]) {
       expect(CONGESTION[key].label).toEqual(expect.any(String));

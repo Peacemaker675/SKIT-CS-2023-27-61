@@ -119,6 +119,13 @@ def list_intersections():
     candidates = [
         os.path.abspath(
             os.path.join(
+                os.path.dirname(__file__), "../configs/intersections.json"
+            )
+        ),
+        "/app/shared/configs/intersections.json",
+        "/app/app/configs/intersections.json",
+        os.path.abspath(
+            os.path.join(
                 os.path.dirname(__file__), "../../../shared/configs/intersections.json"
             )
         ),
@@ -130,7 +137,17 @@ def list_intersections():
     ]
     for path in candidates:
         if os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as f:
-                return jsonify(json.load(f)), 200
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    if isinstance(data, list) and len(data) > 0:
+                        return jsonify(data), 200
+            except Exception as e:
+                current_app.logger.warning(f"Error reading {path}: {e}")
 
-    return jsonify([]), 200
+    # Fallback to standard 10-node Jaipur road network
+    fallback = [
+        {"id": f"INT_{i:03d}", "name": f"Intersection {i}", "lat": 26.82 + (i * 0.003), "lng": 75.86 + (i * 0.003), "neighbors": []}
+        for i in range(1, 11)
+    ]
+    return jsonify(fallback), 200

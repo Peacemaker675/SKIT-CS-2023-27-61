@@ -48,11 +48,12 @@ def create_app():
 
     register_cli(app)
 
-    # Don't start background listener during CLI subcommands (e.g. create-user, set-password)
+    # Don't start background listener during CLI subcommands or tests
     import sys
 
     is_cli_cmd = any(cmd in sys.argv for cmd in ["create-user", "set-password", "db"])
-    if not is_cli_cmd:
+    is_testing = app.config.get("TESTING") or any("unittest" in arg or "pytest" in arg for arg in sys.argv)
+    if not is_cli_cmd and not is_testing:
         socketio.start_background_task(coordination_listener, app)
 
     return app

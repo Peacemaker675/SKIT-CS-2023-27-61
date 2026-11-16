@@ -8,8 +8,8 @@ const FOCUSABLE =
 // stay inside it, Esc calls onClose, and focus returns to whatever was
 // focused before when it closes. Attach the returned ref to the dialog box.
 //
-// Only the top-most dialog reacts, so a confirm dialog opened over a form
-// dialog handles Esc / Tab itself.
+// Only the top-most dialog reacts, and keys pressed inside any other dialog
+// (such as ui/ConfirmDialog opened over a form) are left to that dialog.
 const openDialogs = [];
 
 export function useDialog({ onClose, initialFocus } = {}) {
@@ -29,6 +29,9 @@ export function useDialog({ onClose, initialFocus } = {}) {
 
     function onKeyDown(event) {
       if (openDialogs[openDialogs.length - 1] !== node) return;
+      // Another dialog on top (e.g. a ConfirmDialog) handles its own keys.
+      const other = event.target?.closest?.('[role="dialog"]');
+      if (other && other !== node) return;
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();

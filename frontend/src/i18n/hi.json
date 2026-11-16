@@ -2,6 +2,8 @@
   "common": {
     "loading": "लोड हो रहा है…",
     "checkingSession": "सत्र की जाँच हो रही है…",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
     "logout": "लॉग आउट",
     "comingSoon": "जल्द आ रहा है",
     "switchLanguage": "Switch to English",
@@ -143,11 +145,14 @@
   "alerts": {
     "title": "अलर्ट",
     "empty": "अभी कोई अलर्ट नहीं।",
+    "clearAll": "सभी हटाएँ",
+    "dismiss": "अलर्ट हटाएँ",
     "types": {
       "heavy": "भारी भीड़",
       "stale": "फ़ीड रुकी",
       "event": "विशेष कार्यक्रम",
-      "manual": "मैनुअल मोड"
+      "manual": "मैनुअल मोड",
+      "server": "सर्वर"
     },
     "messages": {
       "heavy": "भीड़ भारी स्तर पर पहुँची",
@@ -205,10 +210,9 @@
     "clearTitle": "आपातकाल समाप्त करें?",
     "clearText": "{vehicle} {id} को पहुँचा हुआ मानकर सिग्नल सामान्य नियंत्रण पर लौटाएँ?",
     "clearConfirm": "हाँ, समाप्त करें",
-    "cancelTitle": "आपातकाल रद्द करें?",
+    "cancelTitle": "यह आपातकाल रोकें?",
     "cancelText": "{to} तक पहुँचने से पहले {vehicle} कॉरिडोर {id} रोकें? सिग्नल सामान्य नियंत्रण पर लौट जाएँगे।",
-    "cancelConfirm": "हाँ, रद्द करें",
-    "keep": "चलने दें",
+    "cancelConfirm": "हाँ, रोकें",
     "working": "हो रहा है…",
     "actionFailed": "{id} अपडेट नहीं हो सका: {reason}"
   }

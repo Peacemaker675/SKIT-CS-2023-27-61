@@ -12,6 +12,11 @@ INFERENCE_COOLDOWN_SECONDS = 3.0
 def load_topology():
     candidates = [
         os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "configs/topology.json")
+        ),
+        "/app/app/configs/topology.json",
+        "/app/shared/configs/topology.json",
+        os.path.abspath(
             os.path.join(os.path.dirname(__file__), "../../shared/configs/topology.json")
         ),
         os.path.abspath(
@@ -44,6 +49,57 @@ def get_5_intersection_window(center_id):
         mapping.get("west", center_id),
         mapping.get("south", center_id),
     ]
+
+
+def extract_4_lane_counts(redis_client, intersection_id, payload_data=None):
+    """
+    Extracts [North, East, South, West] vehicle counts for one intersection.
+    Checks incoming payload first, then falls back to Redis hash.
+    """
+    counts = {"N": 0.0, "E": 0.0, "S": 0.0, "W": 0.0}
+
+    # 1. Try payload data if provided
+    raw_vc = None
+    if isinstance(payload_data, dict):
+        if "vehicle_counts" in payload_data:
+            raw_vc = payload_data["vehicle_counts"]
+        elif isinstance(payload_data.get("data"), dict) and "vehicle_counts" in payload_data["data"]:
+            raw_vc = payload_data["data"]["vehicle_counts"]
+
+    # 2. Try Redis hash if not in payload
+    if raw_vc is None and redis_client:
+        raw = redis_client.hgetall(f"intersection:{intersection_id}") or redis_client.hgetall(
+            intersection_id
+        )
+        if raw and "vehicle_counts" in raw:
+            try:
+                raw_vc = json.loads(raw["vehicle_counts"])
+            except Exception:
+                pass
+        elif raw and "vehicle_count" in raw:
+            try:
+                total = float(raw["vehicle_count"])
+                return [total / 4.0] * 4
+            except ValueError:
+                pass
+
+    if isinstance(raw_vc, dict):
+        for k, v in raw_vc.items():
+            if not isinstance(v, (int, float)):
+                continue
+            key_upper = str(k).strip().upper()
+            if key_upper in ("N", "NORTH"):
+                counts["N"] = float(v)
+            elif key_upper in ("E", "EAST"):
+                counts["E"] = float(v)
+            elif key_upper in ("S", "SOUTH"):
+                counts["S"] = float(v)
+            elif key_upper in ("W", "WEST"):
+                counts["W"] = float(v)
+    elif isinstance(raw_vc, (list, tuple)) and len(raw_vc) >= 4:
+        return [float(raw_vc[0]), float(raw_vc[1]), float(raw_vc[2]), float(raw_vc[3])]
+
+    return [counts["N"], counts["E"], counts["S"], counts["W"]]
 
 
 def extract_intersection_features(redis_client, intersection_id):
@@ -153,6 +209,37 @@ def handle_telemetry_update(app, payload):
     # 1. Forward telemetry to frontend subscribers in intersection room
     socketio.emit("traffic_update", payload, room=intersection_id)
 
+    # Check for alerts to emit optional Socket.IO alert event
+    data = payload.get("data") if isinstance(payload.get("data"), dict) else payload
+    if isinstance(data, dict):
+        now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        alerts = []
+
+        # Heavy congestion check
+        max_q = float(data.get("max_queue_length", 0.0))
+        if max_q > 35.0:
+            alerts.append({"type": "heavy", "message": "Congestion rose to Heavy"})
+
+        # Special event check
+        if data.get("has_special_event") is True:
+            alerts.append({"type": "event", "message": "Special event reported"})
+
+        # Manual control mode check
+        ctrl = str(data.get("control_mode", "")).lower()
+        phase_str = str(data.get("current_phase", "")).lower()
+        if ctrl == "manual" or "manual" in phase_str:
+            alerts.append({"type": "manual", "message": "Signal switched to manual"})
+
+        for alt in alerts:
+            alert_payload = {
+                "type": alt["type"],
+                "intersection_id": intersection_id,
+                "message": alt["message"],
+                "timestamp": now_iso,
+            }
+            socketio.emit("alert", alert_payload, room=intersection_id)
+            socketio.emit("alert", alert_payload)
+
     # 2. Check cooldown to avoid flooding RL agent
     now = time.time()
     last = _last_inference_time.get(intersection_id, 0.0)
@@ -160,8 +247,8 @@ def handle_telemetry_update(app, payload):
         return
     _last_inference_time[intersection_id] = now
 
-    # 3. Gather 5-intersection state (Centre, North, East, West, South)
-    state_vector = build_5_intersection_state(app.redis, intersection_id)
+    # 3. Gather 4-lane observation state [North, East, South, West]
+    state_vector = extract_4_lane_counts(app.redis, intersection_id, payload_data=payload)
 
     # 4. Publish inference request to rl:requests
     rl_request = {
@@ -195,15 +282,26 @@ def handle_rl_decision(app, decision):
         f"intersection:signals:{intersection_id}", json.dumps(signal_command)
     )
 
-    # 3. Emit updated phase to frontend via SocketIO
+    # 3. Emit updated phase to frontend via SocketIO with complete cached telemetry state
+    raw = app.redis.hgetall(f"intersection:{intersection_id}") or app.redis.hgetall(
+        intersection_id
+    )
+    if raw:
+        from app.blueprints.intersections.routes import deserialize_redis_state
+
+        state_data = deserialize_redis_state(raw)
+        state_data["current_phase"] = phase
+    else:
+        state_data = {
+            "current_phase": phase,
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+
     socketio.emit(
         "traffic_update",
         {
             "intersection_id": intersection_id,
-            "data": {
-                "current_phase": phase,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            },
+            "data": state_data,
         },
         room=intersection_id,
     )

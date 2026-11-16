@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useT } from "../i18n/i18n.js";
 import { vehicleLetter } from "../lib/vehicles.js";
 import { corridorStatus, emergencyColor } from "../lib/corridor.js";
-import ConfirmDialog from "./ConfirmDialog.jsx";
+import ConfirmDialog from "./ui/ConfirmDialog.jsx";
 
 export function formatStartTime(iso, lang) {
   const date = new Date(iso);
@@ -152,22 +152,24 @@ export default function EmergencyPanel({
       {pending && (
         <ConfirmDialog
           title={t(`emergency.${pending.kind}Title`)}
-          message={t(`emergency.${pending.kind}Text`, {
-            vehicle: vehicleOf(pending.emergency),
-            id: pending.emergency.id,
-            to: nameOf(pending.emergency.end_id),
-          })}
           confirmLabel={
             busy
               ? t("emergency.working")
               : t(`emergency.${pending.kind}Confirm`)
           }
-          cancelLabel={t("emergency.keep")}
           danger={pending.kind === "cancel"}
-          busy={busy}
+          confirmDisabled={busy}
           onConfirm={runPending}
           onCancel={() => setPending(null)}
-        />
+        >
+          <p>
+            {t(`emergency.${pending.kind}Text`, {
+              vehicle: vehicleOf(pending.emergency),
+              id: pending.emergency.id,
+              to: nameOf(pending.emergency.end_id),
+            })}
+          </p>
+        </ConfirmDialog>
       )}
     </section>
   );

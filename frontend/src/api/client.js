@@ -11,7 +11,7 @@ export class ApiError extends Error {
   constructor(status, body) {
     super(
       (body && (body.code || body.msg || body.error || body.message)) ||
-        `HTTP ${status}`
+        `HTTP ${status}`,
     );
     this.status = status;
     this.body = body;
@@ -19,11 +19,29 @@ export class ApiError extends Error {
   }
 }
 
+function getCookie(name) {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 async function rawRequest(path, { method = "GET", body } = {}) {
+  const headers = body !== undefined ? { "Content-Type": "application/json" } : {};
+  const upperMethod = method.toUpperCase();
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(upperMethod)) {
+    const isRefresh = path.includes("/auth/refresh");
+    const csrfToken = isRefresh
+      ? getCookie("csrf_refresh_token") || getCookie("csrf_access_token")
+      : getCookie("csrf_access_token");
+    if (csrfToken) {
+      headers["X-CSRF-TOKEN"] = csrfToken;
+    }
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     method,
     credentials: "include",
-    headers: body !== undefined ? { "Content-Type": "application/json" } : {},
+    headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
@@ -65,6 +83,9 @@ export async function apiRequest(path, options) {
   return rawRequest(path, options);
 }
 
+// The backend has no override route yet (or this intersection has none).
+export class OverrideUnavailable extends Error {}
+
 export const authApi = {
   login: (official_id, password) =>
     rawRequest("/auth/login", {
@@ -82,7 +103,11 @@ export const intersectionsApi = {
   // it yet; use placeholder intersections only while the route is missing.
   list: async () => {
     try {
-      return await apiRequest("/admin/intersections");
+      const data = await apiRequest("/admin/intersections");
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+      return mockIntersections;
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
         return mockIntersections;
@@ -164,4 +189,23 @@ export const emergenciesApi = {
         }),
       () => mockEmergencies.cancel(id),
     ),
+};
+
+// SRS manual override. ASSUMPTION: the body is { action } until the backend
+// route exists (Dependencies V6).
+export const overrideApi = {
+  send: async (id, action) => {
+    try {
+      await apiRequest(`/intersections/${encodeURIComponent(id)}/override`, {
+        method: "POST",
+        body: { action },
+      });
+      return { ok: true };
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        throw new OverrideUnavailable();
+      }
+      throw err;
+    }
+  },
 };

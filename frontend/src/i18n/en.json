@@ -4,6 +4,8 @@
     "checkingSession": "Checking session…",
     "logout": "Log out",
     "comingSoon": "Coming soon",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
     "switchLanguage": "Switch to Hindi",
     "switchToDark": "Switch to dark mode",
     "switchToLight": "Switch to light mode"
@@ -143,11 +145,14 @@
   "alerts": {
     "title": "Alerts",
     "empty": "No alerts yet.",
+    "clearAll": "Clear all",
+    "dismiss": "Dismiss alert",
     "types": {
       "heavy": "Heavy congestion",
       "stale": "Feed stale",
       "event": "Special event",
-      "manual": "Manual mode"
+      "manual": "Manual mode",
+      "server": "Server"
     },
     "messages": {
       "heavy": "Congestion rose to Heavy",
@@ -205,10 +210,9 @@
     "clearTitle": "Clear emergency?",
     "clearText": "Mark {vehicle} {id} as arrived and give the signals back to normal control?",
     "clearConfirm": "Yes, clear",
-    "cancelTitle": "Cancel emergency?",
+    "cancelTitle": "Stop this emergency?",
     "cancelText": "Stop the {vehicle} corridor {id} before it reaches {to}? Signals go back to normal control.",
-    "cancelConfirm": "Yes, cancel it",
-    "keep": "Keep running",
+    "cancelConfirm": "Yes, stop it",
     "working": "Working…",
     "actionFailed": "Could not update {id}: {reason}"
   }

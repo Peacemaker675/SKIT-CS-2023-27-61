@@ -10,7 +10,7 @@ import {
   startRequest,
   validate,
 } from "../lib/emergencyForm.js";
-import ConfirmDialog from "./ConfirmDialog.jsx";
+import ConfirmDialog from "./ui/ConfirmDialog.jsx";
 import { useDialog } from "./useDialog.js";
 
 function Field({ id, label, error, children }) {
@@ -201,19 +201,21 @@ export default function EmergencyForm({ intersections, onStart, onClose }) {
       {confirming && (
         <ConfirmDialog
           title={t("emergency.confirmTitle")}
-          message={t("emergency.confirmText", {
-            vehicle: t(`emergency.vehicles.${type}`),
-            from: nameOf(start),
-            to: nameOf(end),
-            n: preview ? preview.stops.length : 0,
-          })}
           confirmLabel={busy ? t("emergency.starting") : t("emergency.confirm")}
-          cancelLabel={t("emergency.cancel")}
           danger
-          busy={busy}
+          confirmDisabled={busy}
           onConfirm={handleConfirm}
           onCancel={() => setConfirming(false)}
-        />
+        >
+          <p>
+            {t("emergency.confirmText", {
+              vehicle: t(`emergency.vehicles.${type}`),
+              from: nameOf(start),
+              to: nameOf(end),
+              n: preview ? preview.stops.length : 0,
+            })}
+          </p>
+        </ConfirmDialog>
       )}
     </>
   );

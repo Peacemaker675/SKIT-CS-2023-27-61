@@ -19,7 +19,30 @@ import {
   emergencyColor,
 } from "../lib/corridor.js";
 import { useT } from "../i18n/i18n.js";
+import CongestionMark from "./CongestionMark.jsx";
 import { formatStartTime } from "./EmergencyPanel.jsx";
+
+// One icon per level, reused between updates so a marker keeps its element
+// (and keyboard focus) while the live data changes.
+const icons = new Map();
+
+function markerIcon(level, selected) {
+  const key = `${level}-${selected}`;
+  if (!icons.has(key)) {
+    const { color, symbol } = CONGESTION[level];
+    const size = selected ? 32 : 24;
+    const cls = selected ? "map-marker selected" : "map-marker";
+    icons.set(
+      key,
+      L.divIcon({
+        className: "map-marker-icon",
+        html: `<span class="${cls}" style="background:${color}">${symbol}</span>`,
+        iconSize: [size, size],
+      }),
+    );
+  }
+  return icons.get(key);
+}
 
 function escapeHtml(text) {
   return String(text).replace(
@@ -31,28 +54,29 @@ function escapeHtml(text) {
   );
 }
 
-// Icons are cached so live-data re-renders don't rebuild the marker DOM
-// (which would flicker an open tooltip).
-const icons = new Map();
+// Vehicle icons are cached the same way, so live-data re-renders don't
+// rebuild the marker DOM (which would flicker an open tooltip).
+const vehicleIcons = new Map();
 
 function vehicleIcon(type, label, color, selected) {
   const key = `${type}|${label}|${color}|${selected}`;
-  if (!icons.has(key)) {
-    icons.set(key, makeVehicleIcon(type, label, color, selected));
+  if (!vehicleIcons.has(key)) {
+    vehicleIcons.set(
+      key,
+      L.divIcon({
+        className: `vehicle-marker vehicle-${type}${
+          selected ? " selected" : ""
+        }`,
+        html: `<span role="img" aria-label="${escapeHtml(
+          label,
+        )}" style="background:${color}">${vehicleLetter(type)}</span>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        tooltipAnchor: [0, -16],
+      }),
+    );
   }
-  return icons.get(key);
-}
-
-function makeVehicleIcon(type, label, color, selected) {
-  return L.divIcon({
-    className: `vehicle-marker vehicle-${type}${selected ? " selected" : ""}`,
-    html: `<span role="img" aria-label="${escapeHtml(
-      label,
-    )}" style="background:${color}">${vehicleLetter(type)}</span>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    tooltipAnchor: [0, -16],
-  });
+  return vehicleIcons.get(key);
 }
 
 // Zooms the map so every intersection is visible.
@@ -82,11 +106,12 @@ function FitToRoute({ points }) {
 }
 
 // SRS Tab 1, Component 1: every managed intersection as a clickable icon,
-// coloured by its current congestion level. Active emergencies are drawn on
-// top, each in its own colour: a dashed line along the route, a ring around
-// each corridor intersection (one ring per corridor where they share one)
-// and a marker for the vehicle. Selecting an emergency zooms to its route
-// and dims the others.
+// showing its current congestion level by colour and symbol.
+//
+// Active emergencies are drawn as well, each in its own colour: a dashed
+// line along the route, a ring around each corridor intersection (one ring
+// per corridor where they share one) and a marker for the vehicle.
+// Selecting an emergency zooms to its route and dims the others.
 export default function IntersectionMap({
   intersections,
   liveData,
@@ -124,8 +149,8 @@ export default function IntersectionMap({
           <FitToRoute points={pointsOf(selectedEmergency)} />
         )}
 
-        {/* Below the congestion markers (overlay pane is z-index 400), so
-            routes and rings never cover a marker's colour or its clicks. */}
+        {/* Below the intersection markers (marker pane is z-index 600), so
+            routes and rings never cover a marker or its clicks. */}
         <Pane name="emergency-corridor" style={{ zIndex: 390 }}>
           {emergencies.map((e) => {
             const points = pointsOf(e);
@@ -169,7 +194,8 @@ export default function IntersectionMap({
                 <CircleMarker
                   key={`ring-${i.id}-${e.id}`}
                   center={[i.lat, i.lng]}
-                  radius={(i.id === selectedId ? 14 : 10) + 6 + k * 5}
+                  // Marker icons are 24px (32px selected): ring sits outside.
+                  radius={(i.id === selectedId ? 16 : 12) + 6 + k * 5}
                   interactive={false}
                   pathOptions={{
                     color: emergencyColor(e.id),
@@ -183,35 +209,30 @@ export default function IntersectionMap({
         </Pane>
 
         {intersections.map((i) => {
-          const { color, label } =
-            CONGESTION[congestionLevel(liveData[i.id])];
-          const selected = i.id === selectedId;
+          const level = congestionLevel(liveData[i.id]);
+          const name = `${i.name || i.id} · ${CONGESTION[level].label}`;
+          const onCorridor = corridors.has(i.id)
+            ? ` · ${t("emergency.legend")}: ${corridors
+                .get(i.id)
+                .map((e) => e.id)
+                .join(", ")}`
+            : "";
           return (
-            <CircleMarker
+            <Marker
               key={i.id}
-              center={[i.lat, i.lng]}
-              radius={selected ? 14 : 10}
-              pathOptions={{
-                color: selected ? "#1c2430" : "#ffffff",
-                weight: selected ? 3 : 2,
-                fillColor: color,
-                fillOpacity: 0.9,
-              }}
+              position={[i.lat, i.lng]}
+              icon={markerIcon(level, i.id === selectedId)}
               eventHandlers={{ click: () => onSelect(i.id) }}
             >
               <Tooltip>
-                {i.name || i.id} · {label}
-                {corridors.has(i.id) &&
-                  ` · ${t("emergency.legend")}: ${corridors
-                    .get(i.id)
-                    .map((e) => e.id)
-                    .join(", ")}`}
+                {name}
+                {onCorridor}
               </Tooltip>
-            </CircleMarker>
+            </Marker>
           );
         })}
 
-        {/* Vehicles use the marker pane, which is above every circle. */}
+        {/* Vehicles sit above the intersection markers (zIndexOffset). */}
         {emergencies.map((e) => {
           const at = byId.get(e.current_id || e.start_id);
           if (!hasPoint(at)) return null;
@@ -249,9 +270,9 @@ export default function IntersectionMap({
         })}
       </MapContainer>
       <ul className="legend">
-        {Object.entries(CONGESTION).map(([key, { label, color }]) => (
+        {Object.entries(CONGESTION).map(([key, { label }]) => (
           <li key={key}>
-            <span className="dot" style={{ background: color }} />
+            <CongestionMark level={key} />
             {label}
           </li>
         ))}

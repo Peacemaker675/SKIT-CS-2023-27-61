@@ -5,6 +5,7 @@ import {
   corridorsByIntersection,
   emergencyColor,
 } from "./corridor.js";
+import { CONGESTION } from "./congestion.js";
 
 const ROUTE = ["A", "B", "C", "D", "E"];
 const at = (current_id, route = ROUTE) => ({ route, current_id });
@@ -87,8 +88,8 @@ describe("emergencyColor", () => {
   });
 
   it("never uses a congestion colour", () => {
-    for (const c of ["#2e9e44", "#e0a400", "#d32f2f", "#8a94a3"]) {
-      expect(CORRIDOR_COLORS).not.toContain(c);
+    for (const { color } of Object.values(CONGESTION)) {
+      expect(CORRIDOR_COLORS).not.toContain(color);
     }
   });
 });

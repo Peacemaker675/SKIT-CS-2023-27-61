@@ -12,6 +12,7 @@ export const ALERT_TYPES = {
   stale: "Feed stale",
   event: "Special event",
   manual: "Manual mode",
+  server: "Server",
 };
 
 let seq = 0;
@@ -19,6 +20,32 @@ let seq = 0;
 function alert(type, intersectionId, message, time) {
   seq += 1;
   return { key: `${time}-${seq}`, type, intersectionId, message, time };
+}
+
+// Same alert (type, intersection, text) inside this window is shown only once.
+export const DEDUPE_MS = 60000;
+
+// Drops repeats from `fresh`. `seen` maps each alert to when it was last
+// shown; returns the new map too. It is kept apart from the visible list so
+// dismissing an alert doesn't let its repeat straight back in.
+export function dedupeAlerts(fresh, seen) {
+  const alerts = [];
+  const nextSeen = new Map(seen);
+  for (const a of fresh) {
+    const id = `${a.type}:${a.intersectionId}:${a.message}`;
+    if (a.time - (nextSeen.get(id) ?? -Infinity) < DEDUPE_MS) continue;
+    nextSeen.set(id, a.time);
+    alerts.push(a);
+  }
+  return { alerts, seen: nextSeen };
+}
+
+// Alert pushed by the backend. ASSUMPTION: no event is agreed yet, so accept
+// { message, intersection_id?, timestamp? } and show the text as sent.
+export function serverAlert(msg, now = Date.now()) {
+  if (!msg || typeof msg.message !== "string" || !msg.message) return null;
+  const time = toMillis(msg.timestamp) ?? now;
+  return alert("server", msg.intersection_id ?? null, msg.message, time);
 }
 
 // The signal is under manual control. No field for this is agreed yet, so
